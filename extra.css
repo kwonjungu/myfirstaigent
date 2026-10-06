@@ -48,3 +48,14 @@ main#top { padding-bottom: 48px; }
   .pstep-shots.n2, .pstep-shots.n3 { grid-template-columns: 1fr; }
   .here .pos { margin-left: 0; }
 }
+
+/* 실습 프롬프트: 사진 위, 큰 글자, 연회색 칸 */
+.pstep .prompt-list { margin: 4px 0 20px; }
+.pstep .prompt-row { background: #ececec; border: 0; border-radius: 14px; padding: 20px 22px; align-items: flex-start; gap: 16px; }
+.pstep .prompt-row .ptext { font-size: 22px; line-height: 1.6; font-weight: 600; }
+.pstep .prompt-row .pcat { font-size: 20px; min-width: 44px; text-align: center; margin-top: 4px; }
+.pstep .prompt-copy { font-size: 16px; padding: 8px 20px; margin-top: 2px; }
+@media (max-width: 720px) {
+  .pstep .prompt-row { flex-wrap: wrap; padding: 16px; }
+  .pstep .prompt-row .ptext { font-size: 19px; }
+}

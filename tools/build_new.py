@@ -146,7 +146,7 @@ def photo(key):
 
 
 def prompt_row(cat, text):
-    return (f'<div class="prompt-row"><span class="pcat">{E(cat)}</span><div class="pbody">'
+    return (f'<div class="prompt-row"><div class="pbody">'
             f'<span class="ptext">{E(text)}</span></div><button class="prompt-copy" type="button">복사</button></div>')
 
 
@@ -258,8 +258,8 @@ for k, (no, folder, title, nav, lead, steps) in enumerate(P):
         shots = "".join(photo(x) for x in keys)
         out.append(f'<div class="pstep"><div class="pstep-head"><span class="guide-no">{j+1}</span><h3>{E(gt)}</h3></div>'
                    f'<p class="guide-desc">{gd}</p>'
-                   + (f'<div class="pstep-shots n{min(len(keys), 3)}">{shots}</div>' if shots else "")
-                   + f'<div class="prompt-list">{prompt_row(CIRCLE[j], pr)}</div></div>')
+                   + f'<div class="prompt-list">{prompt_row(CIRCLE[j], pr)}</div>'
+                   + (f'<div class="pstep-shots n{min(len(keys), 3)}">{shots}</div>' if shots else "") + '</div>')
     body = (f'<p class="pnote">순서: <strong>파일 열기</strong> → 프롬프트 <strong>[복사]</strong> → 입력창 <strong>Ctrl+V</strong> → AI가 물으면 답하기 → 결과 확인. '
             f'파일은 바탕화면 <strong>inlineAI_실습/{E(folder)}</strong> 폴더에 있어요.</p>' + "".join(out))
     ALLHTML.append(page(f"p{no}.html", re.sub("<br />", " ", title), f"실습 {no}", title, lead, TILES[k % len(TILES)], no, body))
