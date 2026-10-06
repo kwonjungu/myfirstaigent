@@ -100,8 +100,8 @@ P = [
         ("중복 지우고 모으기", "지우기 전에 <strong>목록부터</strong> 보여 달라고 해도 돼요.", []),
     ]),
     ("02", "02_가정통신문_양식맞추기", "가정통신문<br />양식 맞추기", "가정통신문", "메모만 주면 우리 학교 양식 그대로 채워요. 다른 학교 양식으로도 옮겨요.", [
-        ("기존 양식에 채우기", NEW + "<strong>실습 1</strong>을 한글로 열고, <strong>보낼내용_메모</strong>를 채팅창에 끌어다 놓아요.", ["02_p1", "02_memo"]),
-        ("회신서까지 바꾸기", "<strong>실습 2</strong>를 열어요. 메모에 '궁금한 건 나에게 묻기'가 있어서 AI가 먼저 물어요.", ["02_p2"]),
+        ("기존 양식에 채우기", NEW + "<strong>실습 1</strong>을 한글로 열어요. 메모 내용은 프롬프트에 들어 있어요.", ["02_p1"]),
+        ("회신서까지 바꾸기", "<strong>실습 2</strong>를 열어요. '궁금한 내용은 나에게 묻기'가 있어서 AI가 먼저 물어요.", ["02_p2"]),
         ("공문 서식 채우기", "<strong>실습 3</strong> 국외 자율연수 계획서를 열어요. 모르는 칸은 AI가 물어요.", ["02_p3"]),
         ("다른 학교 양식으로", "<strong>실습 4</strong> 백암초 안내장 양식을 열어요. 같은 내용, 다른 양식.", ["02_p4"]),
     ]),
@@ -186,6 +186,7 @@ def topbar(current):
       <a class="caption-sm" href="start.html">처음 준비</a>
       <a class="caption-sm deck-tab-pdf" href="{ZIP_HREF}" download>실습 자료 zip ↓</a>
       <a class="deck-tab deck-tab-padlet" href="https://portal.inline-ai.com/invitation-promotion?code=K2YERY3H" target="_blank" rel="noopener">초대 이벤트 &#8599;</a>
+      <a class="deck-tab" href="lecture.html" title="강의안 (번호 입력 후 열려요)">강의안 &#128274;</a>
     </div>
   </div>
   <header class="primary-nav">
@@ -302,12 +303,16 @@ ALLHTML.append(home)
 
 # ------------------------------------------------------------------ 정적 파일
 shutil.copy(os.path.join(OLD, "styles.css"), OUT)
+# 강의안: 기존 lecture.html (번호 1111 잠금 내장) + 쓰는 그림
+shutil.copy(os.path.join(OLD, "lecture.html"), OUT)
+ALLHTML_LECTURE = open(os.path.join(OLD, "lecture.html"), encoding="utf-8").read()
 shutil.copy(os.path.join(os.path.dirname(os.path.abspath(__file__)), "extra.css"), OUT)
 shutil.copy(os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.js"), OUT)
 open(os.path.join(OUT, ".nojekyll"), "w").close()
 refs = set()
 for h in ALLHTML:
     refs |= set(re.findall(r'(?:src|href)="(assets/shot/[^"]+|assets/files/[^"]+)"', h))
+refs |= set(re.findall(r'(?:src|href)="(assets/[^"]+)"', ALLHTML_LECTURE))
 for r in sorted(refs):
     src, dst = os.path.join(OLD, unquote(r)), os.path.join(OUT, unquote(r))
     os.makedirs(os.path.dirname(dst), exist_ok=True)
