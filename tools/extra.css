@@ -1,0 +1,50 @@
+/* myfirstaigent: 홈 허브 · 번호 탭 · 실습 단계 */
+.primary-nav { box-shadow: none; }
+.tabs { border-top: 1px solid var(--hairline-soft); box-shadow: inset 0 -1px 0 var(--hairline-soft); background: var(--canvas); }
+.tabs-row { display: flex; gap: 6px; overflow-x: auto; padding-top: 8px; padding-bottom: 8px; scrollbar-width: thin; }
+.tab { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 6px 12px; border-radius: 999px;
+       font-size: 14px; font-weight: 600; color: var(--ash); border: 1px solid var(--hairline-soft); white-space: nowrap; }
+.tab:hover { border-color: var(--ink); color: var(--ink); }
+.tab-no { font-family: "Bebas Neue", sans-serif; font-size: 16px; letter-spacing: .02em; color: var(--stone); }
+.tab.on { background: var(--ink); color: var(--on-primary); border-color: var(--ink); }
+.tab.on .tab-no { color: var(--accent-pink-soft); }
+
+.crumb { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin: 24px 0 8px; }
+.here { font-size: 14px; color: var(--mute); }
+.here strong { color: var(--ink); }
+.here .pos { margin-left: 10px; padding: 2px 8px; border-radius: 999px; background: var(--soft-cloud); font-size: 12px; font-weight: 700; color: var(--ink); }
+
+.page .lecture-detail { max-height: none; opacity: 1; overflow: visible; }
+.page .lecture { margin-top: 8px; }
+.pager { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin: 32px 0 48px; }
+
+.pnote { background: var(--canvas); border-radius: 12px; padding: 14px 18px; margin-bottom: 28px; color: var(--charcoal); }
+.pstep { background: var(--canvas); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+.pstep-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.pstep-head h3 { margin: 0 !important; font-size: 22px !important; }
+.pstep .guide-desc { margin: 0 0 16px; }
+.pstep-shots { display: grid; gap: 12px; margin-bottom: 16px; }
+.pstep-shots.n2 { grid-template-columns: 1fr 1fr; }
+.pstep-shots.n3 { grid-template-columns: repeat(3, 1fr); }
+.pstep-shots .guide-shot { margin: 0; max-height: 520px; overflow: hidden; border: 1px solid var(--hairline-soft); border-radius: 10px; }
+.pstep-shots.n1 .guide-shot { max-width: 720px; }
+
+.hub { margin-top: 48px; }
+.hub-h { font-family: "Black Han Sans", sans-serif; font-weight: 400; font-size: 30px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.hub-h span { display: inline-flex; width: 40px; height: 40px; border-radius: 999px; background: var(--ink); color: var(--on-primary);
+              align-items: center; justify-content: center; font-size: 20px; flex: 0 0 auto; }
+.hub-lead { color: var(--mute); margin-bottom: 16px; }
+.hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+.hub-card { display: block; background: var(--soft-cloud); border-radius: 16px; padding: 20px; color: var(--ink); border: 2px solid transparent; }
+.hub-card:hover { border-color: var(--ink); }
+.hub-card b { display: block; font-size: 18px; margin: 10px 0 4px; }
+.hub-sub { color: var(--mute); font-size: 14px; }
+.hub-tag { display: inline-block; background: var(--ink); color: var(--on-primary); border-radius: 999px; font-size: 12px; font-weight: 700; padding: 2px 10px; }
+.hub-tag.p { background: var(--accent-pink); }
+main#top { padding-bottom: 48px; }
+
+@media (max-width: 720px) {
+  .pstep { padding: 18px; }
+  .pstep-shots.n2, .pstep-shots.n3 { grid-template-columns: 1fr; }
+  .here .pos { margin-left: 0; }
+}
