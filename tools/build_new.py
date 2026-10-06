@@ -168,7 +168,8 @@ def prompt_row(cat, text):
 PAGES = [("concept.html", "에이전트 AI란?", ("1", "개념")), ("start.html", "시작 준비", ("2", "준비"))] + \
         [(f"p{no}.html", re.sub("<br />", " ", t), (no, nav)) for no, _, t, nav, _, _ in P] + \
         [("claude.html", "클로드 코워크로 한 걸음 더", ("4", "클로드")), ("wrap.html", "정리 · 내일부터 이렇게", ("✓", "정리"))]
-GROUP = {"concept.html": "1 에이전트 AI란?", "start.html": "2 시작 준비", "claude.html": "4 클로드 챕터", "wrap.html": "4 클로드 챕터"}
+PAGES = [(f, t, (str(i), n[1])) for i, (f, t, n) in enumerate(PAGES, 1)]  # 탭 번호는 1~13 차례대로
+GROUP = {"concept.html": "에이전트 AI란?", "start.html": "시작 준비", "claude.html": "클로드 챕터", "wrap.html": "정리"}
 
 HEAD = '''<!DOCTYPE html>
 <html lang="ko">
@@ -236,7 +237,7 @@ def page(fname, title, kicker, h2, lead, tile, no, body):
           + (f'<a class="btn btn-secondary" href="{nxt[0]}">{E(nxt[1])} →</a>' if nxt else "<span></span>") + "</nav>")
     html_ = (HEAD.format(title=E(title) + " · 내 첫 에이전트 AI") + topbar(fname)
              + f'''  <main class="shell page" id="top">
-    <p class="crumb"><a class="btn btn-secondary btn-sm" href="index.html">← 홈</a><span class="here">지금 여기 · {GROUP.get(fname, "3 영역별 실습")} › <strong>{E(PAGES[i][2][0])} {E(PAGES[i][2][1])}</strong><span class="pos">{i+1} / {len(PAGES)}</span></span></p>
+    <p class="crumb"><a class="btn btn-secondary btn-sm" href="index.html">← 홈</a><span class="here">지금 여기 · {GROUP.get(fname, "영역별 실습")} › <strong>{E(PAGES[i][2][0])} {E(PAGES[i][2][1])}</strong><span class="pos">{i+1} / {len(PAGES)}</span></span></p>
     <section class="lecture open" aria-label="{E(title)}">
       <div class="lecture-row">
         <div class="lecture-media {tile}"><span class="lecture-no">{no}</span></div>
