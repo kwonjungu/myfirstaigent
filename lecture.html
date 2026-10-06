@@ -575,13 +575,12 @@ html:not([lang="ko"]) .formula.big p{font-size:42px}
 <div class="ui" id="ui">
   <a class="home" href="index.html" title="사이트 홈">홈</a>
   <button id="prev" aria-label="이전 장">‹</button><span class="cnt" id="cnt"></span><button id="next" aria-label="다음 장">›</button>
-  <button id="btnToc" title="목차 (T)">목차</button><button id="btnNotes" title="발표자 노트 (N)">노트</button><button id="mode" title="목록/발표 (F)">목록 보기</button>
+  <button id="btnToc" title="목차 (T)">목차</button><button id="btnNotes" title="발표자 노트 (N)">노트</button><button id="mode" title="목록/발표 (F)">목록 보기</button><button id="btnFs" title="전체화면 (Z)">전체화면</button>
+  <a class="home pdf" href="download/%EA%B0%95%EC%9D%98%EC%95%88.pdf" download title="강의안 PDF 내려받기 (열기 암호는 연수 번호)">PDF ↓</a>
 </div>
 <aside class="notes-panel" id="notes" aria-label="발표자 노트"><div class="np-hd"><b>발표자 노트</b><span id="npMeta"></span><button id="npX" aria-label="노트 닫기">✕</button></div><div class="np-body" id="npBody"></div></aside>
 <div class="toc" id="toc" role="dialog" aria-label="목차"><div class="toc-box"><div class="toc-hd"><b>목차</b><span>누르면 그 장으로 가요 · T 또는 Esc로 닫기</span></div><div class="toc-list" id="tocList"></div></div></div>
-<div class="keys" id="keys">← → 넘기기 · N 노트 · T 목차 · F 목록/발표 · P 인쇄 보기</div>
-<script type="application/json" id="i18n">{}</script>
-<div class="lang" id="lang" hidden></div>
+<div class="keys" id="keys">← → 넘기기 · Z 전체화면 · N 노트 · T 목차 · F 목록/발표 · P 인쇄 보기</div>
 <script>(function(){
   var qs = new URLSearchParams(location.search);
   var frames = [].slice.call(document.querySelectorAll('.frame'));
@@ -633,28 +632,7 @@ html:not([lang="ko"]) .formula.big p{font-size:42px}
     layout(); if (!on) show(cur);
   }
 
-  /* 화면 언어(한국어/English/Tiếng Việt) — 화면 글자·제목만, 노트는 한국어 */
-  var DICT = {}; try { DICT = JSON.parse(document.getElementById('i18n').textContent); } catch(e) {}
-  var lang = 'ko', TX = [];
-  frames.forEach(function(f){
-    var w = document.createTreeWalker(f.firstElementChild, NodeFilter.SHOW_TEXT, null), n;
-    while ((n = w.nextNode())){ var k = n.nodeValue.replace(/\s+/g, ' ').trim(); if (k && DICT[k]) TX.push({n:n, ko:n.nodeValue, k:k}); }
-    f.firstElementChild.querySelectorAll('[alt]').forEach(function(el){ var k = el.getAttribute('alt'); if (DICT[k]) TX.push({el:el, ko:k, k:k}); });
-  });
-  function tr(k){ return lang !== 'ko' && DICT[k] && DICT[k][lang] ? DICT[k][lang] : k; }
-  function setLang(l){
-    lang = (l === 'en' || l === 'vi') ? l : 'ko';
-    TX.forEach(function(t){
-      var v = tr(t.k);
-      if (t.el) t.el.setAttribute('alt', v);
-      else t.n.nodeValue = lang === 'ko' ? t.ko : t.ko.replace(t.ko.trim(), v);
-    });
-    document.documentElement.lang = lang;
-    [].slice.call(document.querySelectorAll('#lang button')).forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false'); });
-    try { localStorage.setItem('deckLang', lang); } catch(e) {}
-    buildToc();
-  }
-  document.getElementById('lang').addEventListener('click', function(e){ var b = e.target.closest('button[data-lang]'); if (b) setLang(b.dataset.lang); });
+  function tr(k){ return k; }
 
   /* 목차 */
   var tocList = document.getElementById('tocList');
@@ -726,8 +704,6 @@ html:not([lang="ko"]) .formula.big p{font-size:42px}
 
   var start = parseInt((location.hash || '').slice(1), 10);
   if (start >= 1 && start <= N) cur = start - 1;
-  var saved = qs.get('lang'); if (!saved) { try { saved = localStorage.getItem('deckLang'); } catch(e) {} }
-  if (saved && saved !== 'ko' && (!printmode || qs.get('lang'))) setLang(saved);
   if (printmode){ setPrint(true); }
   else { setPresent(qs.get('list') !== '1'); }
 
@@ -763,6 +739,23 @@ html:not([lang="ko"]) .formula.big p{font-size:42px}
   }
   var imgs = [].slice.call(document.images).map(function(im){ return im.complete ? Promise.resolve() : new Promise(function(r){ im.onload = im.onerror = r; }); });
   Promise.all([document.fonts.ready].concat(imgs)).then(function(){ setTimeout(run, 300); });
+})();
+</script>
+<script>
+(function(){
+  var b = document.getElementById('btnFs'), de = document.documentElement;
+  function on(){ return document.fullscreenElement || document.webkitFullscreenElement; }
+  function toggle(){
+    if (on()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (de.requestFullscreen || de.webkitRequestFullscreen).call(de);
+  }
+  function sync(){ b.textContent = on() ? '전체화면 끄기' : '전체화면'; }
+  b.onclick = toggle;
+  document.addEventListener('fullscreenchange', sync); document.addEventListener('webkitfullscreenchange', sync);
+  addEventListener('keydown', function(e){
+    if (window.__deckLocked || e.target.tagName === 'INPUT') return;
+    if (e.key === 'z' || e.key === 'Z' || e.key === 'ㅋ') toggle();
+  });
 })();
 </script>
 </body></html>

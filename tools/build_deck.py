@@ -4,7 +4,9 @@
    - 실습 장: 프롬프트는 실습 폴더의 프롬프트.txt 원문, 사진은 사이트와 같은 미리보기
    사용: python build_deck.py <기존 저장소> <실습 폴더> <사이트 폴더(출력)>"""
 import os, re, sys, html, json
-import qrcode
+import qrcode, subprocess, pathlib
+from urllib.parse import quote
+from pypdf import PdfReader, PdfWriter
 sys.stdout.reconfigure(encoding="utf-8")
 
 OLD, MAT, OUT = sys.argv[1:4]
@@ -262,6 +264,14 @@ add(S5, "다시 보기", qr_slide("오늘 가져가는 것", ["실습 자료 · 
 # ------------------------------------------------------------------ 조립
 CSS = open(os.path.join(LEC, "lecture.css"), encoding="utf-8").read()
 JS = open(os.path.join(LEC, "lecture.js"), encoding="utf-8").read()
+# 외국어 전환 빼기: 번역 블록을 '그대로 돌려주는 tr'로 바꾸고, 저장된 언어 복원도 지움
+_a = JS.index("  /* 화면 언어")
+_b = JS.index("  /* 목차 */")
+JS = JS[:_a] + "  function tr(k){ return k; }\n\n" + JS[_b:]
+JS = re.sub(r"\n\s*var saved = qs\.get\('lang'\);.*?\n.*?setLang\(saved\);", "", JS)
+assert "setLang" not in JS and "i18n" not in JS
+JS = JS.replace("' · 원고 ' + f.dataset.src.replace(/,/g, ', ') + ", "")
+PDF_HREF = "download/" + quote("강의안.pdf")
 GATE = open(os.path.join(LEC, "gate.html"), encoding="utf-8").read()
 EXTRA = """
 .cover-sub{margin-top:28px;font-size:26px;color:rgba(255,255,255,.72)}
@@ -308,14 +318,30 @@ doc = f'''<!doctype html>
 <div class="ui" id="ui">
   <a class="home" href="index.html" title="사이트 홈">홈</a>
   <button id="prev" aria-label="이전 장">‹</button><span class="cnt" id="cnt"></span><button id="next" aria-label="다음 장">›</button>
-  <button id="btnToc" title="목차 (T)">목차</button><button id="btnNotes" title="발표자 노트 (N)">노트</button><button id="mode" title="목록/발표 (F)">목록 보기</button>
+  <button id="btnToc" title="목차 (T)">목차</button><button id="btnNotes" title="발표자 노트 (N)">노트</button><button id="mode" title="목록/발표 (F)">목록 보기</button><button id="btnFs" title="전체화면 (Z)">전체화면</button>
+  <a class="home pdf" href="{PDF_HREF}" download title="강의안 PDF 내려받기 (열기 암호는 연수 번호)">PDF ↓</a>
 </div>
 <aside class="notes-panel" id="notes" aria-label="발표자 노트"><div class="np-hd"><b>발표자 노트</b><span id="npMeta"></span><button id="npX" aria-label="노트 닫기">✕</button></div><div class="np-body" id="npBody"></div></aside>
 <div class="toc" id="toc" role="dialog" aria-label="목차"><div class="toc-box"><div class="toc-hd"><b>목차</b><span>누르면 그 장으로 가요 · T 또는 Esc로 닫기</span></div><div class="toc-list" id="tocList"></div></div></div>
-<div class="keys" id="keys">← → 넘기기 · N 노트 · T 목차 · F 목록/발표 · P 인쇄 보기</div>
-<script type="application/json" id="i18n">{{}}</script>
-<div class="lang" id="lang" hidden></div>
-<script>{JS.replace("' · 원고 ' + f.dataset.src.replace(/,/g, ', ') + ", "")}</script>
+<div class="keys" id="keys">← → 넘기기 · Z 전체화면 · N 노트 · T 목차 · F 목록/발표 · P 인쇄 보기</div>
+<script>{JS}</script>
+<script>
+(function(){{
+  var b = document.getElementById('btnFs'), de = document.documentElement;
+  function on(){{ return document.fullscreenElement || document.webkitFullscreenElement; }}
+  function toggle(){{
+    if (on()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (de.requestFullscreen || de.webkitRequestFullscreen).call(de);
+  }}
+  function sync(){{ b.textContent = on() ? '전체화면 끄기' : '전체화면'; }}
+  b.onclick = toggle;
+  document.addEventListener('fullscreenchange', sync); document.addEventListener('webkitfullscreenchange', sync);
+  addEventListener('keydown', function(e){{
+    if (window.__deckLocked || e.target.tagName === 'INPUT') return;
+    if (e.key === 'z' || e.key === 'Z' || e.key === 'ㅋ') toggle();
+  }});
+}})();
+</script>
 </body></html>'''
 open(os.path.join(OUT, "lecture.html"), "w", encoding="utf-8").write(doc)
 tot = sum(s[6] for s in SL)
@@ -324,3 +350,20 @@ for i, s in enumerate(SL, 1):
     for m in re.findall(r'src="(assets/[^"]+)"', s[4]):
         if not os.path.exists(os.path.join(OUT, m)):
             print("없는 그림:", i, m)
+
+# ------------------------------------------------------------------ PDF (인쇄 모드 그대로, 열기 암호 = 연수 번호 1111)
+EDGE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+raw = os.path.join(HERE, "lecture_raw.pdf")
+url = pathlib.Path(os.path.abspath(os.path.join(OUT, "lecture.html"))).as_uri() + "?print=1&code=1111"
+subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--user-data-dir=" + os.path.join(HERE, "edgeprof_pdf"),
+                "--no-pdf-header-footer", "--virtual-time-budget=30000", "--print-to-pdf=" + raw, url], capture_output=True, timeout=300)
+r = PdfReader(raw)
+w = PdfWriter()
+for pg in r.pages:
+    w.add_page(pg)
+w.add_metadata({"/Title": "내 첫 에이전트 AI · 강의안"})
+w.encrypt(user_password="1111", owner_password="1111", algorithm="AES-256")
+os.makedirs(os.path.join(OUT, "download"), exist_ok=True)
+with open(os.path.join(OUT, "download", "강의안.pdf"), "wb") as f:
+    w.write(f)
+print(f"PDF {len(r.pages)}쪽 · {os.path.getsize(os.path.join(OUT, 'download', '강의안.pdf')) // 1024}KB (암호 1111)")
