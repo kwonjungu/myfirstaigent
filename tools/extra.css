@@ -60,3 +60,14 @@ main#top { padding-bottom: 48px; }
   .pstep .prompt-row .ptext { font-size: 19px; }
 }
 .pstep .plabel { color: var(--accent-teal); font-weight: 800; }
+
+/* 주소 · QR 크게 보기 */
+button.deck-tab { border: 0; cursor: pointer; font: inherit; }
+.addr { position: fixed; inset: 0; z-index: 200; background: rgba(17,17,17,.94); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.addr[hidden] { display: none; }
+.addr-box { background: #fff; border-radius: 28px; padding: clamp(20px, 4vw, 48px); text-align: center; max-width: 92vw; }
+.addr-k { font-size: 18px; font-weight: 700; color: var(--mute); }
+.addr-url { font-family: "Black Han Sans", sans-serif; font-size: clamp(36px, 7vw, 96px); line-height: 1.1; color: var(--ink); margin: 6px 0 18px; word-break: keep-all; }
+.addr-qr svg { width: min(62vh, 80vw); height: auto; display: block; margin: 0 auto; }
+.addr-hint { margin-top: 14px; font-size: 15px; color: var(--mute); }
+.addr-x { position: absolute; top: 18px; right: 22px; width: 48px; height: 48px; border-radius: 999px; border: 0; background: #fff; font-size: 22px; cursor: pointer; }

@@ -57,3 +57,15 @@
     });
   });
 })();
+
+// 주소 · QR 크게 보기
+(function () {
+  var box = document.getElementById('addr');
+  if (!box) return;
+  function open() { box.hidden = false; }
+  function close() { box.hidden = true; }
+  document.querySelectorAll('.addr-open').forEach(function (b) { b.addEventListener('click', open); });
+  box.querySelector('.addr-x').addEventListener('click', close);
+  box.addEventListener('click', function (e) { if (e.target === box) close(); });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();

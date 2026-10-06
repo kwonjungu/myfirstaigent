@@ -13,7 +13,8 @@ OLD, MAT, OUT = sys.argv[1:4]
 LEC = os.path.join(OLD, "tools", "lecture")
 HERE = os.path.dirname(os.path.abspath(__file__))
 E = html.escape
-SITE = "https://kwonjungu.github.io/myfirstaigent/"
+SITE = "https://joo.is/" + quote("오현에이전트")  # QR용(어느 카메라든 열리게 퍼센트 인코딩)
+SHORT = "joo.is/오현에이전트"  # 화면에 보이는 주소
 
 # 사이트 빌드 스크립트의 실습 데이터(P) 그대로 가져오기
 _src = open(os.path.join(HERE, "build_new.py"), encoding="utf-8").read()
@@ -54,7 +55,7 @@ def br(*lines):
 
 def cover(chip, l1, l2, sub):
     return (f'<div class="pad cover-pad"><span class="chip-k">{E(chip)}</span>'
-            f'<h1 class="d-xxl">{br(l1, l2)}</h1><p class="cover-sub">{E(sub)}</p>'
+            f'<h1 class="d-xxl">{br(l1, l2)}</h1><p class="cover-sub">{E(sub)}</p><p class="cover-url">{E(SHORT)}</p>'
             '<div class="cover-dots" aria-hidden="true"><i></i><i></i><i></i></div></div>')
 
 
@@ -144,7 +145,7 @@ def qr_svg(text, size=280):
 def qr_slide(title, lines, acc):
     return (f'<div class="pad kv"><div class="kl-col"><span class="rule sm" style="background:{acc}"></span><h2 class="d-md">{E(title)}</h2>'
             + "".join(f'<p class="kg big">{x}</p>' for x in lines)
-            + f'<p class="kurl">{E(SITE.replace("https://", ""))}</p></div><div class="kq">{qr_svg(SITE)}</div></div>')
+            + f'<p class="kurl">{E(SHORT)}</p></div><div class="kq">{qr_svg(SITE)}</div></div>')
 
 
 # ================================================================== 여는 말 · 1 개념
@@ -275,6 +276,8 @@ PDF_HREF = "download/" + quote("강의안.pdf")
 GATE = open(os.path.join(LEC, "gate.html"), encoding="utf-8").read()
 EXTRA = """
 .cover-sub{margin-top:28px;font-size:26px;color:rgba(255,255,255,.72)}
+.cover-url{margin-top:18px;font-size:30px;font-weight:800;color:#fff;letter-spacing:.01em}
+.kurl{font-size:34px!important}
 .kf{display:inline-block;margin-top:14px;font-size:20px;color:rgba(255,255,255,.55)}
 .kx{flex-direction:row;align-items:center;gap:36px;padding:52px 60px 66px}
 .kx .kl-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
