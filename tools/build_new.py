@@ -156,9 +156,12 @@ def photo(key):
     return f'<figure class="guide-shot"><a href="{src}" target="_blank" rel="noopener"><img src="{src}" alt="실습 파일 미리보기" loading="lazy" /></a></figure>'
 
 
+LABEL = re.compile(r"(?m)^(할 일|조건|끝나면|메모):")
+
+
 def prompt_row(cat, text):
     return (f'<div class="prompt-row"><div class="pbody">'
-            f'<span class="ptext">{re.sub(r"(?m)^(할 일|조건|끝나면|메모):", r"<b class=\"plabel\">:</b>", E(text))}</span></div><button class="prompt-copy" type="button">복사</button></div>')
+            f'<span class="ptext">{LABEL.sub(lambda m: "<b class=" + chr(34) + "plabel" + chr(34) + ">" + m.group(1) + ":</b>", E(text))}</span></div><button class="prompt-copy" type="button">복사</button></div>')
 
 
 # ------------------------------------------------------------------ 페이지 틀
