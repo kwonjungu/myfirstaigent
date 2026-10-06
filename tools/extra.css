@@ -59,3 +59,4 @@ main#top { padding-bottom: 48px; }
   .pstep .prompt-row { flex-wrap: wrap; padding: 16px; }
   .pstep .prompt-row .ptext { font-size: 19px; }
 }
+.pstep .plabel { color: var(--accent-teal); font-weight: 800; }

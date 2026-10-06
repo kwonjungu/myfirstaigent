@@ -73,6 +73,17 @@ START = ZIPBOX + parts[3] + p4 + parts[5] + p6 + GUIDE
 CLAUDE = detail_inner(section("s09"))
 WRAP = detail_inner(section("s10"))
 WRAP = WRAP.replace('href="download/inlineAI_실습.zip"', f'href="{ZIP_HREF}"')
+# 「빠른 AI가 좋은 AI일까요?」 쇼츠는 도입(개념)으로
+_i = WRAP.index('<div class="guide-mix"><p class="mix-highlight">▶ 쇼츠</p>')
+_j = WRAP.index('<div class="guide-key"><h3>오늘 가져가는 것</h3>', _i)
+CONCEPT += WRAP[_i:_j]
+WRAP = WRAP[:_i] + WRAP[_j:]
+# 오늘 가져가는 것: 새 실습 폴더에 맞게 (정답 파일·04 학교기본정보 없음)
+WRAP = WRAP.replace('<span class="key-label">00_업무지침</span><p class="key-text">04 학교기본정보만 고치면 <strong>내일부터</strong></p>',
+                    '<span class="key-label">00_업무지침</span><p class="key-text">짧은판을 지시사항에 붙여 <strong>내일부터</strong></p>')
+WRAP = WRAP.replace('<div class="key-item"><span class="key-label">정답 파일</span><p class="key-text">결과와 <strong>나란히</strong> 놓고 비교</p></div>', '')
+WRAP = WRAP.replace('<span class="key-label">프롬프트 저장소</span><p class="key-text">이 페이지에서 <strong>복사</strong>해서 그대로</p>',
+                    '<span class="key-label">프롬프트</span><p class="key-text">실습 페이지에서 <strong>복사</strong>해서 그대로</p>')
 
 
 def lead_of(sid):
@@ -147,7 +158,7 @@ def photo(key):
 
 def prompt_row(cat, text):
     return (f'<div class="prompt-row"><div class="pbody">'
-            f'<span class="ptext">{E(text)}</span></div><button class="prompt-copy" type="button">복사</button></div>')
+            f'<span class="ptext">{re.sub(r"(?m)^(할 일|조건|끝나면|메모):", r"<b class=\"plabel\">:</b>", E(text))}</span></div><button class="prompt-copy" type="button">복사</button></div>')
 
 
 # ------------------------------------------------------------------ 페이지 틀
@@ -282,7 +293,7 @@ def card(href, tag, name, sub, accent=False):
 
 home_body = (hero
              + '<section class="hub"><h2 class="hub-h"><span>1</span>에이전트 AI란?</h2><div class="hub-grid">'
-             + card("concept.html", "개념", "챗봇이 아니라 일을 맡는 AI", "로컬이라 좋은 점 · 에이전트 AI라서")
+             + card("concept.html", "개념", "챗봇이 아니라 일을 맡는 AI", "로컬이라 좋은 점 · 에이전트 AI라서 · 빠른 AI가 좋은 AI일까요?")
              + '</div></section>'
              + '<section class="hub"><h2 class="hub-h"><span>2</span>시작 준비</h2><div class="hub-grid">'
              + card("start.html", "준비", "설치 · 가입 · 폴더 초대", "여섯 단계 · 지시사항 · 안전장치 · 업무 지침")
@@ -294,7 +305,7 @@ home_body = (hero
              + '</div></section>'
              + '<section class="hub"><h2 class="hub-h"><span>4</span>클로드 챕터</h2><div class="hub-grid">'
              + card("claude.html", "클로드", "클로드 코워크로 한 걸음 더", "앱 준비 · 업무 지침 스킬 · 예약")
-             + card("wrap.html", "정리", "내일부터 이렇게", "아침 루틴 · 여러 AI에게 동시에")
+             + card("wrap.html", "정리", "내일부터 이렇게", "아침 루틴 · 여러 AI에게 동시에 · 오늘 가져가는 것")
              + '</div></section>')
 home = HEAD.format(title="내 첫 에이전트 AI") + topbar("index.html") + f'  <main class="shell" id="top">\n{home_body}\n  </main>\n' + FOOT
 home = home.replace('<link rel="stylesheet" href="extra.css" />', '<link rel="stylesheet" href="extra.css" />')
