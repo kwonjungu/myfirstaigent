@@ -14,8 +14,8 @@ OLD, MAT, OUT = sys.argv[1:4]
 LEC = os.path.join(OLD, "tools", "lecture")
 HERE = os.path.dirname(os.path.abspath(__file__))
 E = html.escape
-SITE = "https://joo.is/" + quote("오현에이전트")  # QR용(어느 카메라든 열리게 퍼센트 인코딩)
-SHORT = "joo.is/오현에이전트"  # 화면에 보이는 주소
+SITE = "https://joo.is/" + quote("처음에이전트")  # QR용(어느 카메라든 열리게 퍼센트 인코딩)
+SHORT = "joo.is/처음에이전트"  # 화면에 보이는 주소
 
 # 사이트 빌드 스크립트의 실습 데이터(P) 그대로 가져오기
 sys.path.insert(0, HERE)

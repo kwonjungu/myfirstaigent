@@ -270,7 +270,7 @@ def topbar(current):
 FOOT = '''
   <div class="addr" id="addr" role="dialog" aria-label="사이트 주소와 QR" hidden>
     <button class="addr-x" type="button" aria-label="닫기">✕</button>
-    <div class="addr-box"><p class="addr-k">사이트 주소</p><p class="addr-url">joo.is/오현에이전트</p>
+    <div class="addr-box"><p class="addr-k">사이트 주소</p><p class="addr-url">joo.is/처음에이전트</p>
     <div class="addr-qr">{QR}</div><p class="addr-hint">휴대폰 카메라로 찍어도 열려요 · Esc로 닫기</p></div>
   </div>
   <footer class="site-footer shell">
@@ -323,8 +323,8 @@ from urllib.parse import quote as _q
 def _qrsvg(text):
     q = _qr.QRCode(border=2); q.add_data(text); q.make(); m = q.get_matrix(); n = len(m)
     r = "".join(f'<rect x="{x}" y="{y}" width="1" height="1"/>' for y, row in enumerate(m) for x, v in enumerate(row) if v)
-    return f'<svg viewBox="0 0 {n} {n}" role="img" aria-label="QR: joo.is/오현에이전트" shape-rendering="crispEdges"><rect width="{n}" height="{n}" fill="#fff"/><g fill="#111">{r}</g></svg>'
-FOOT = FOOT.replace("{QR}", _qrsvg("https://joo.is/" + _q("오현에이전트")))
+    return f'<svg viewBox="0 0 {n} {n}" role="img" aria-label="QR: joo.is/처음에이전트" shape-rendering="crispEdges"><rect width="{n}" height="{n}" fill="#fff"/><g fill="#111">{r}</g></svg>'
+FOOT = FOOT.replace("{QR}", _qrsvg("https://joo.is/" + _q("처음에이전트")))
 ALLHTML = []
 ALLHTML.append(page("concept.html", "에이전트 AI란?", "STEP 1 · 개념", "에이전트 AI란?",
                     "묻는 말에 답만 하는 챗봇이 아니에요. 내 컴퓨터에서 <strong>일을 맡는</strong> AI예요.", "tile-flow", "AI", CONCEPT))
