@@ -120,6 +120,9 @@ def fsize(text, w):
     return 12
 
 
+NAMES = {x[0]: re.sub(r"<br\s*/?>", " ", x[2]) for x in P}  # 단계 장 맨 위에 실습 이름까지
+
+
 def practice(no, j, gt, gd, keys, pr, acc):
     imgs = []
     for k in keys:
@@ -133,7 +136,7 @@ def practice(no, j, gt, gd, keys, pr, acc):
         right = '<div class="kr">' + "".join(f'<div class="panel"><img src="{s}" alt="실습 파일 미리보기"></div>' for s in imgs) + "</div>"
     w = 700 if imgs else 1120
     return (f'<div class="pad kx{" one" if not imgs else ""}"><div class="kl-col">'
-            f'<span class="tag" style="background:{acc}">실습 {no} · {j}</span>'
+            f'<span class="tag" style="background:{acc}">실습 {no} {E(NAMES.get(no, ""))} · {j}단계</span>'
             f'<h2 class="kt">{E(gt)}</h2><p class="kg">{gd}</p>{pbox(pr, fsize(pr, w))}</div>{right}</div>')
 
 
@@ -291,7 +294,7 @@ add(S4, "클로드 코워크로 한 걸음 더", section("C", "클로드 코워�
 _gpt = os.path.join(OUT, "assets", "shot", "chatgpt", "05_running.png")
 add(S4, "ChatGPT 앱 폴더 모드", shot("ChatGPT 앱 폴더 모드로도", "assets/shot/chatgpt/05_running.png", PINK, "같은 프롬프트, 다른 앱") if os.path.exists(_gpt)
     else sentence(["ChatGPT 앱 폴더 모드로도", "같은 프롬프트로"], "캡처 예정 — 사이트 클로드 페이지에 붙일 자리", PINK, "d-md"),
-    "ChatGPT 데스크톱 앱도 폴더를 연결하면 같은 실습을 할 수 있어요. 오늘 프롬프트를 그대로 붙여 보세요. 한글 양식을 그대로 살리는 건 inline AI가 편하고, 대화와 검색은 ChatGPT 앱이 편해요.", 45)
+    "ChatGPT 데스크톱 앱의 Codex 모드에 같은 프롬프트로 실습 3개를 시켜 봤어요. 사진 옮기기 1초, 설문 통계 2분 30초, 가정통신문 6분이었고 정답도 맞았어요. 다만 유료 상위 모델이라 무료 inline AI와 단순 비교는 어려워요. 한글 양식 편집은 inline AI가 화면에서 바로 보이니 편하고, 코드·검증은 Codex가 꼼꼼해요.", 45)
 add(S4, "같은 습관, 더 많은 기능", cards("같은 습관, 더 많은 기능", [("프로젝트", "학교 일 묶음별로<br><b>자료·지침을 고정</b>"), ("스킬", "00_업무지침을<br><b>스킬로 올려</b> 늘 적용"),
     ("예약", "'매주 월요일 아침'처럼<br><b>정해진 때 알아서</b>")], PINK, "일단 던지기 · 내 컴퓨터에 초대 · 양식 주기는 똑같아요"),
     "클로드 데스크톱 앱의 코워크도 내 폴더를 맡기는 방식은 같아요. 여기에 프로젝트, 스킬, 예약이 더해져요.", 90)

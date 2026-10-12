@@ -72,13 +72,15 @@ button.deck-tab { border: 0; cursor: pointer; font: inherit; }
 .addr-hint { margin-top: 14px; font-size: 15px; color: var(--mute); }
 .addr-x { position: absolute; top: 18px; right: 22px; width: 48px; height: 48px; border-radius: 999px; border: 0; background: #fff; font-size: 22px; cursor: pointer; }
 
-/* 실습 번호 칩 탭 — 실습은 번호만, 지금 보는 칩만 이름까지 */
+/* 실습 번호 칩 탭 — 번호 + 작은 이름 (넓은 화면은 두 줄까지) */
 .tab-group { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 6px 2px 6px 8px; font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; }
 .tab-group .tab-no { color: var(--stone); }
 .tab-p { padding: 6px 9px; gap: 4px; }
 .tab-p .tab-no { color: var(--ink); }
-.tab-p .tab-name { display: none; }
-.tab-p.on .tab-name { display: inline; }
+.tab-p .tab-name { display: inline; font-size: 12px; font-weight: 600; }
+.tab-p.on .tab-name { font-weight: 800; }
+.primary-nav .tabs-row { height: auto; min-height: 60px; }  /* .primary-nav .shell 의 60px 고정 높이 풀기 */
+@media (min-width: 900px) { .tabs-row { flex-wrap: wrap; row-gap: 6px; overflow-x: visible; } }
 .tab-p.lv3 { border-color: var(--accent-pink); }
 .tab-p.lv3 .tab-no { color: var(--accent-pink); }
 .tab-p.lv3.on { background: var(--accent-pink); border-color: var(--accent-pink); }

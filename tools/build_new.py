@@ -99,7 +99,7 @@ START = ZIPBOX + p3 + p4 + p5 + p6 + GUIDE
 
 CLAUDE = detail_inner(section("s09"))
 # ChatGPT 앱 폴더 모드 자리: 캡처(assets/shot/chatgpt/*.png)가 있으면 그림, 없으면 '캡처 예정' 칸
-GPT_SHOTS = [("03_folder_connected", "폴더 연결"), ("05_running", "실행 중"), ("07_done", "결과")]
+GPT_SHOTS = [("03_folder_connected", "① 시키기"), ("05_running", "② 스스로 실행"), ("07_done", "③ 결과 엑셀 열어 보기")]
 
 
 def _gpt_fig(key, cap):
@@ -110,9 +110,14 @@ def _gpt_fig(key, cap):
 
 
 GPT_BLOCK = ('<div class="guide-mix"><p class="mix-highlight">🟢 ChatGPT 앱</p><h3>ChatGPT 앱 폴더 모드로도</h3>'
-             '<p class="mix-lead">같은 실습을 ChatGPT 데스크톱 앱에 폴더를 연결해서 시켜 봤어요. <strong>같은 프롬프트</strong>, 다른 앱.</p>'
+             '<p class="mix-lead">같은 실습 3개를 ChatGPT 데스크톱 앱(Codex 모드 · GPT-6.1 Sol)에 시켜 봤어요. <strong>같은 프롬프트</strong>, 허락 요청 0번.</p>'
+             '<table class="cmp" style="min-width:0;margin:6px 0 10px"><thead><tr><th>실습</th><th>결과</th><th>걸린 시간</th></tr></thead><tbody>'
+             '<tr><th>01-1 사진 옮기기</th><td>22장 이동 · 0바이트 4장 제외</td><td>1초</td></tr>'
+             '<tr><th>02-1 설문 통계</th><td>정답과 같음(6번 3.27 · 5번 3.46 · 7번 3.53)</td><td>2분 30초</td></tr>'
+             '<tr><th>05-1 가정통신문</th><td>hwpx 양식 유지 · 활동지 추가 · 한글로 열어 확인</td><td>6분</td></tr></tbody></table>'
+             '<p class="key-foot" style="font-size:13px;color:#666">시간은 작업 착수~검증 완료 기준(2026. 10. 12. 실측). 유료 상위 모델이라 inline AI 무료 「자동」과 단순 비교는 어려워요.</p>'
              '<div class="gpt-grid">' + "".join(_gpt_fig(k, c) for k, c in GPT_SHOTS) + '</div>'
-             '<p class="mix-lead">한글(hwpx) 양식을 그대로 살리는 건 inline AI가 더 편하고, 대화·검색은 ChatGPT 앱이 편해요.</p></div>')
+             '<p class="mix-lead">한글 양식 편집은 inline AI가 화면에서 바로 보여 편하고, 검증까지 꼼꼼한 건 Codex 쪽이에요.</p></div>')
 CLAUDE += GPT_BLOCK
 WRAP = detail_inner(section("s10"))
 WRAP = WRAP.replace('href="download/inlineAI_실습.zip"', f'href="{ZIP_HREF}"')
@@ -410,7 +415,10 @@ refs |= set(re.findall(r'(?:src|href)="(assets/[^"]+)"', ALLHTML_LECTURE))
 for r in sorted(refs):
     src, dst = os.path.join(OLD, unquote(r)), os.path.join(OUT, unquote(r))
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copy(src, dst)
+    if os.path.exists(src):
+        shutil.copy(src, dst)
+    elif not os.path.exists(dst):
+        raise FileNotFoundError(src)  # 옛 저장소에도, 출력 폴더에도 없음
 
 bad = []
 for h in ALLHTML:
