@@ -27,21 +27,58 @@ def click(pg, t, sel="button,[role=menuitem]", wait=800, no_wait=False):
     pg.wait_for_timeout(wait)
 
 
-def pick_dialog(path, edit_id):
+def _dialogs():
+    wins = Desktop(backend="uia").windows()
+    ds = [c for w in wins if w.window_text().startswith("inline AI") for c in w.children() if c.class_name() == "#32770"]
+    return ds + [w for w in wins if w.class_name() == "#32770" and "첨부" in w.window_text()]
+
+
+def close_dialogs():
+    for d in _dialogs():
+        try:
+            [b for b in d.descendants(control_type="Button") if b.element_info.automation_id == "2"][0].invoke()
+        except Exception:
+            pass
+
+
+def pick_dialog(path, edit_id, timeout=25):
+    """선택 창이 다 그려질 때까지 매번 다시 찾아서, 입력칸에 경로를 넣고 확인"""
     t0 = time.time()
-    while time.time() - t0 < 15:
-        apps = [w for w in Desktop(backend="uia").windows() if w.window_text() == "inline AI"]
-        ds = [c for a in apps for c in a.children() if c.class_name() == "#32770"]
-        if ds:
-            break
-        time.sleep(0.3)
-    d = ds[0]
-    [c for c in d.descendants(control_type="Edit") if c.element_info.automation_id == edit_id][0].set_edit_text(path)
-    [c for c in d.descendants(control_type="Button") if c.element_info.automation_id == "1"][0].invoke()
-    time.sleep(1.5)
+    while time.time() - t0 < timeout:
+        for d in _dialogs():
+            try:
+                eds = [c for c in d.descendants() if c.element_info.control_type == "Edit" and c.element_info.automation_id == edit_id]
+                oks = [c for c in d.descendants() if c.element_info.control_type == "Button" and c.element_info.automation_id == "1"]
+            except Exception:
+                continue
+            if eds and oks:
+                eds[0].set_edit_text(path)
+                oks[0].invoke()
+                time.sleep(1.5)
+                return
+        time.sleep(0.5)
+    close_dialogs()
+    raise RuntimeError("파일 선택 창의 입력칸을 못 찾음")
+
+
+def os_front():
+    """inline AI 메인 창을 운영체제 수준에서 복원·앞으로 (최소화되어 있으면 파일 선택 창이 안 뜸)"""
+    for w in Desktop(backend="uia").windows():
+        if w.window_text() == "inline AI":
+            try:
+                if w.is_minimized():
+                    w.restore()
+                w.set_focus()
+            except Exception:
+                pass
+            time.sleep(0.8)
 
 
 def attach(pg, kind, path):
+    close_dialogs()
+    os_front()
+    pg.bring_to_front()
+    pg.wait_for_timeout(800)
     click(pg, "파일 및 폴더 첨부하기")
     click(pg, "폴더 첨부하기" if kind == "folder" else "파일 첨부하기", no_wait=True, wait=300)
     pick_dialog(path, "1152" if kind == "folder" else "1148")

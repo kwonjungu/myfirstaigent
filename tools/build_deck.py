@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""강의안(lecture.html) 만들기 — 사이트와 같은 구성(개념 · 준비 · 실습 01~09 · 클로드 · 정리)
+"""강의안(lecture.html) 만들기 — 사이트와 같은 구성(개념 · 준비 · 실습 전부(practices.py) · 클로드 · 정리)
    - 엔진: 기존 lecture.css / lecture.js / gate.html(번호 1111) 재사용
-   - 실습 장: 프롬프트는 실습 폴더의 프롬프트.txt 원문, 사진은 사이트와 같은 미리보기
+   - 실습 장: 순서·안내·배지(시작 방법·예상 시간·난이도)는 practices.py, 프롬프트는 실습 폴더의 프롬프트.txt 원문
+   - 미리보기 그림이 아직 없으면 그 그림만 빼고 계속 만든다(없는 키는 끝에 출력)
    사용: python build_deck.py <기존 저장소> <실습 폴더> <사이트 폴더(출력)>"""
 import os, re, sys, html, json
 import qrcode, subprocess, pathlib
@@ -17,11 +18,9 @@ SITE = "https://joo.is/" + quote("오현에이전트")  # QR용(어느 카메라
 SHORT = "joo.is/오현에이전트"  # 화면에 보이는 주소
 
 # 사이트 빌드 스크립트의 실습 데이터(P) 그대로 가져오기
-_src = open(os.path.join(HERE, "build_new.py"), encoding="utf-8").read()
-_p = _src[_src.index("NEW = "):_src.index("TILES = [")]
-_ns = {}
-exec(_p, _ns)
-P = _ns["P"]
+sys.path.insert(0, HERE)
+from practices import P, INFO, MODE  # noqa: E402
+MISSING = []  # 아직 없는 미리보기 키
 
 
 def read(p):
@@ -82,6 +81,17 @@ def steps(title, items, acc, cap=""):
             f'<div class="steps">{cells}</div>' + (f'<p class="cap mt">{cap}</p>' if cap else "") + "</div>")
 
 
+def compare(title, rows, acc, cap=""):
+    head = ('<div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:0;font-size:24px;line-height:1.35;margin-top:22px">'
+            '<div></div><div style="padding:10px 16px;color:#666;border-bottom:3px solid #111;font-weight:700">대화형 AI (챗봇)</div>'
+            f'<div style="padding:10px 16px;border-bottom:3px solid {acc};font-weight:700">에이전트 AI (inline AI)</div>')
+    body = "".join(f'<div style="padding:10px 16px;font-weight:700;border-bottom:1px solid #ddd">{a}</div>'
+                   f'<div style="padding:10px 16px;color:#555;border-bottom:1px solid #ddd">{b}</div>'
+                   f'<div style="padding:10px 16px;background:#f5f5f5;border-bottom:1px solid #ddd">{c}</div>' for a, b, c in rows)
+    return (f'<div class="pad"><span class="rule sm" style="background:{acc}"></span><h2 class="d-md">{E(title)}</h2>'
+            + head + body + "</div>" + (f'<p class="cap">{cap}</p>' if cap else "") + "</div>")
+
+
 def shot(title, src, acc, sub=""):
     return (f'<div class="pad tight"><div class="hd"><span class="tick" style="background:{acc}"></span><h2 class="d-sm">{E(title)}'
             + (f' <span class="hl2">{E(sub)}</span>' if sub else "") + '</h2></div>'
@@ -111,7 +121,13 @@ def fsize(text, w):
 
 
 def practice(no, j, gt, gd, keys, pr, acc):
-    imgs = [f"assets/practice/{k}.png" for k in keys][:2]
+    imgs = []
+    for k in keys:
+        if os.path.exists(os.path.join(OUT, "assets", "practice", f"{k}.png")):
+            imgs.append(f"assets/practice/{k}.png")
+        elif k not in MISSING:
+            MISSING.append(k)
+    imgs = imgs[:2]
     right = ""
     if imgs:
         right = '<div class="kr">' + "".join(f'<div class="panel"><img src="{s}" alt="실습 파일 미리보기"></div>' for s in imgs) + "</div>"
@@ -119,6 +135,16 @@ def practice(no, j, gt, gd, keys, pr, acc):
     return (f'<div class="pad kx{" one" if not imgs else ""}"><div class="kl-col">'
             f'<span class="tag" style="background:{acc}">실습 {no} · {j}</span>'
             f'<h2 class="kt">{E(gt)}</h2><p class="kg">{gd}</p>{pbox(pr, fsize(pr, w))}</div>{right}</div>')
+
+
+def badges(no):
+    i = INFO[no]
+    lv = i["level"]
+    hot = ' style="background:#D30005;border-color:#D30005;color:#fff"' if lv == "도전" else ""
+    return ('<span class="bdgs">'
+            f'<span class="bdg"><i>시작</i>{E(MODE[i["mode"]])}</span>'
+            f'<span class="bdg"><i>예상</i>{E(i["time"])}</span>'
+            f'<span class="bdg"{hot}><i>난이도</i>{E(lv)}</span></span>')
 
 
 def video(vid, title, cap, acc, short=True):
@@ -143,6 +169,7 @@ def qr_svg(text, size=280):
 
 
 def qr_slide(title, lines, acc):
+    assert len(SHORT) <= 30 and "\n" not in SHORT, "kurl 자리는 사이트 주소만"
     return (f'<div class="pad kv"><div class="kl-col"><span class="rule sm" style="background:{acc}"></span><h2 class="d-md">{E(title)}</h2>'
             + "".join(f'<p class="kg big">{x}</p>' for x in lines)
             + f'<p class="kurl">{E(SHORT)}</p></div><div class="kq">{qr_svg(SITE)}</div></div>')
@@ -154,6 +181,8 @@ add(S1, "표지", cover("교원 연수 · 학교 현장 에이전트 AI", "내 �
     "안녕하세요. 오늘은 AI에게 '묻는 법'이 아니라 내 업무 파일을 '맡기는 법'을 해 봅니다. 끝날 때쯤엔 가정통신문, 기안문, 품의, 퀴즈까지 직접 맡겨 본 상태가 돼요.", 30, dark=True)
 add(S1, "답하는 AI가 아니라 일을 맡는 AI", sentence(["묻는 말에 답하는 AI가 아니라", "일을 맡는 AI"], "이걸 <b>에이전트 AI</b>라고 불러요", PINK),
     "챗GPT처럼 묻고 답하는 AI는 답을 복사해 붙이는 일이 제 몫이었죠. 에이전트 AI는 파일을 직접 열고, 고치고, 저장까지 해요. 오늘 쓰는 inline AI가 그런 AI예요.", 60)
+add(S1, "대화형 AI와 다른 점", compare("대화형 AI와 무엇이 다를까요?", [('일하는 곳', '웹 채팅창', '내 컴퓨터의 <b>폴더·문서</b>'), ('파일', '하나씩 올리고, 답을 <b>복사해 붙이기</b>', '폴더째 맡기면 <b>직접 열고 고치고 저장</b>'), ('결과', '채팅 답(글)', '한글·엑셀·그림 <b>파일</b>'), ('일하는 방식', '한 번 묻고 한 번 답', '계획 → <b>여러 단계 실행</b> → 스스로 확인'), ('내가 할 일', '답을 양식에 옮기고 표 맞추기', '결과 파일을 열어 보고 <b>다듬기</b>'), ('걸리는 시간', '몇 초', '1~6분 — <b>시켜 두고 다른 일</b>'), ('가정통신문이라면', '글만 써 줘요. 한글 양식에 붙이고 표 맞추는 건 내 몫', '학교 양식 파일에 <b>직접 채워 새 이름으로 저장</b>해요 (실측 약 3분)')], PINK),
+    "챗GPT 같은 대화형 AI는 답을 주고, 복사해서 한글 양식에 붙이고 표를 맞추는 건 선생님 몫이었죠. 에이전트 AI는 폴더를 맡기면 파일을 직접 열고 여러 단계로 고치고 저장까지 해요. 대신 몇 초가 아니라 몇 분이 걸려요. 그래서 시켜 두고 다른 일을 하는 거예요. 오늘 가정통신문 실습이 실제로 3분쯤 걸려요.", 90)
 add(S1, "로컬이라 좋은 점", cards("내 컴퓨터에 깔려서 좋은 점", [("용량", "<b>큰 파일도 OK</b><br>채팅창 올리기 제한에 덜 걸려요"),
     ("여러 파일", "계획서·예산표·통신문을<br><b>한 번에</b> 읽고 맞춰 봐요"), ("일괄", "폴더 하나를 맡겨<br><b>50개도 한꺼번에</b>")], PINK,
     "그래도 학생 실명·연락처가 든 진짜 파일은 쓰지 마세요"),
@@ -183,58 +212,86 @@ add(S2, "설치 화면", shot("inline-ai.com → 개인용 → Windows용 다운
     "사이트 위쪽 '개인용'을 먼저 누르고 Windows용 다운로드예요. 기관용과 헷갈리지 않게 해 주세요.", 30)
 add(S2, "폴더는 하나만 초대", shot("폴더는 하나만 초대", "assets/files/shot_07_work_panel_1280.png", TEAL, "작업 패널 → 접근 가능한 폴더 → inlineAI_실습"),
     "오른쪽 위 네모 아이콘이 작업 패널이에요. 접근 가능한 폴더에 바탕화면의 inlineAI_실습 하나만 추가하세요. 바탕화면 전체나 다운로드 폴더는 절대 넣지 않아요. 이게 첫 번째 안전장치예요.", 120)
-SHORT = read(os.path.join(MAT, "00_업무지침", "01_기본지침_짧은판.txt"))
+GUIDE = read(os.path.join(MAT, "00_업무지침", "01_기본지침_짧은판.txt"))  # SHORT(사이트 주소)와 이름을 나눠 .kurl에 긴 글이 들어가지 않게
 add(S2, "지시사항 붙이기", (f'<div class="pad kx"><div class="kl-col"><span class="tag" style="background:{TEAL}">지시사항 · 한 번만</span>'
-    f'<h2 class="kt">모든 대화에 같은 규칙</h2><p class="kg">설정 → 일반 설정 → inline AI 지시사항에 <b>Ctrl+V</b></p>{pbox(SHORT, 15)}</div>'
+    f'<h2 class="kt">모든 대화에 같은 규칙</h2><p class="kg">설정 → 일반 설정 → inline AI 지시사항에 <b>Ctrl+V</b></p>{pbox(GUIDE, 15)}</div>'
     '<div class="kr"><div class="panel"><img src="assets/files/shot_11_settings_general_1280.png" alt="지시사항 설정 화면"></div></div></div>'),
-    "사이트 '시작 준비'의 짧은판을 복사해서 설정 → 일반 설정 → 지시사항에 붙여 넣어요. 목록 먼저 보여 주기, 원본은 새 이름으로, 모르는 건 [확인 필요]. 이 세 가지가 매 대화에 자동으로 들어가요.", 120)
+    "사이트 '시작 준비'의 짧은판을 복사해서 설정 → 일반 설정 → 지시사항에 붙여 넣어요. 바로 실행, 원본은 새 이름으로, 모르는 건 [확인 필요]. 이게 매 대화에 자동으로 들어가요. 00_업무지침의 공문서 작성법은 공문서 쓸 때만 AI가 읽어요.", 120)
 add(S2, "안전장치 세 가지", cards("안전장치 세 가지", [("폴더 하나만", "AI가 보는 폴더는<br><b>inlineAI_실습 하나</b>"), ("원본은 새 이름", "고친 파일은<br><b>새 이름으로 저장</b>"),
-    ("목록 먼저", "'고치기 전에<br><b>목록으로 먼저</b> 보여 줘'")], TEAL, "실습이 바뀌면 새 에이전트 · 한글 파일은 하나만 열기 · 엑셀은 MS 엑셀"),
-    "승인 모드는 '모든 편집 허용'으로 두고, 대신 이 세 가지로 지켜요. 실습이 바뀔 때마다 왼쪽 위 '새 에이전트'로 새 대화를 여는 것도 꼭 지켜 주세요.", 60)
+    ("목록 먼저", "필요할 때만<br><b>'목록 먼저 보여 줘'</b>")], TEAL, "실습이 바뀌면 새로 시작 · 한글 파일은 하나만 열기 · 엑셀은 MS 엑셀"),
+    "승인 모드는 '모든 편집 허용'으로 두고, 대신 이 세 가지로 지켜요. 지시사항 1번이 '바로 실행'이라 기본은 바로 해요. 많이 옮기거나 지울 때만 '목록 먼저 보여 줘'라고 하세요. 실습이 바뀔 때마다 새로 시작하는데, 시작 방법은 실습 첫 장 배지대로예요. 한글·엑셀 실습은 왼쪽 사이드바의 한/글 편집하기·Excel 편집하기로 시작해요.", 60)
 add(S2, "프롬프트는 세 줄", steps("프롬프트는 세 줄이면 돼요", [("할 일", "무엇을 할지<br>한 문장으로"), ("조건", "어떻게, 무엇을 지킬지<br>모르면 '내게 물어봐'"),
-    ("끝나면", "어디에 저장하고<br>무엇을 알려 줄지")], TEAL, "오늘 모든 실습 프롬프트가 이 형식이에요"),
-    "오늘 프롬프트는 전부 '할 일 · 조건 · 끝나면' 세 줄이에요. 특히 조건에 '모르는 건 내게 물어봐'를 넣으면 AI가 지어내지 않고 먼저 물어봐요. 끝나면에는 저장 이름과 확인할 것을 적어요.", 75)
+    ("끝나면", "어디에 저장하고<br>무엇을 알려 줄지")], TEAL, "실습은 시간 때문에 답을 프롬프트에 미리 넣었어요"),
+    "오늘 프롬프트는 전부 '할 일 · 조건 · 끝나면' 세 줄이에요. 실제 업무에선 조건에 '모르면 내게 물어봐'를 넣는 게 원칙이에요. AI가 지어내지 않고 먼저 물어봐요. 실습은 시간 때문에 답을 프롬프트에 미리 넣었어요. 끝나면에는 저장 이름과 확인할 것을 적어요.", 75)
+add(S2, "실제 업무에선 짧게", cards("실제 업무에선 더 짧게", [("짧게", "할 일 <b>한 줄</b>이면 충분"), ("자료 던지기", "작년 문서·양식·메모를<br><b>파일째</b> 주기"),
+    ("물어보게", "'모르면 <b>물어봐</b>'로<br>마무리")], PINK,
+    "예: 이 폴더 자료로 2026 체육대회 계획 만들어 줘. 모르는 건 물어봐."),
+    "오늘 실습 프롬프트는 시간 때문에 조건과 답까지 다 넣은 빠른 버전이에요. 실제 업무에선 거꾸로 하세요. 짧게 쓰고, 작년 문서나 양식 같은 자료를 던져 주고, 모르는 건 물어보게 하면 AI가 필요한 걸 먼저 물어요. 그게 더 정확해요.", 45)
+add(S2, "막히면", cards("막히면 이렇게", [("멈춤", "[이어서 작업하기]에서 멈추면<br><b>한/글 편집하기</b>·<br><b>Excel 편집하기</b>로 다시"),
+    ("수락", "끝났는데 멈춰 있으면<br><b>전체 수락하기</b>"), ("선택지", "질문이 <b>선택지 카드</b>로 뜨면<br>하나 누르기")], TEAL),
+    "자주 막히는 곳 세 가지예요. 한글·엑셀 실습을 새 에이전트로 시작하면 [이어서 작업하기] 카드에서 멈춰요. 한/글 편집은 변경 추적이라 끝나고 멈춰 있으면 전체 수락하기를 눌러요. 질문이 선택지 카드로 뜨면 입력창이 사라지니 하나 누르면 돼요.", 60)
 
-# ================================================================== 3 실습 01~09
-ACC = [PINK, RED, TEAL, PINK, RED, TEAL, PINK, RED, TEAL]
-CHECK = {
-    ("01", 1): "사진 폴더가 생겼는지, 0바이트 '흉내' 파일은 빠졌는지 확인해요.",
-    ("01", 2): "AI가 사진을 직접 보고 꿀벌만 골랐는지 — 고른 파일 이름을 같이 봐요.",
-    ("01", 3): "지우기 전에 목록을 먼저 받는 습관. '좋아, 진행해'라고 답하면 실행돼요.",
-    ("02", 1): "머리 표가 그대로인지, 날짜 요일(6. 15.(월)~6. 19.(금), 6. 22.(월))이 맞는지 봐요.",
-    ("02", 2): "AI가 신청 마감일 같은 걸 먼저 물어요. 묻는 말에 답하는 경험이 핵심이에요.",
-    ("02", 3): "2027. 1. 15.~1. 25.는 11일간. 일수를 다시 계산했는지 확인해요.",
-    ("02", 4): "다른 학교 양식으로 옮겨도 내용은 그대로. 오현초 흔적이 남았는지 마지막 보고를 봐요.",
-    ("03", 1): "표 모양 안 2가지를 비교해 고르는 게 포인트. AI와 의논하는 연습이에요.",
-    ("03", 2): "4반은 26명이에요. 한 줄 8명이면 4줄이 나와야 해요.",
-    ("03", 3): "이름표 26장 — 장 수와 학생 수가 같은지 AI가 스스로 확인해요.",
-    ("03", 4): "우유급식 미신청은 9명이에요.",
-    ("04", 1): "2026. 11. 11.은 수요일. 바꾼 곳 목록으로 빠진 곳을 점검해요.",
-    ("04", 2): "열린 양식의 개조식 말투를 따라 했는지 봐요.",
-    ("04", 3): "두 계획서를 같이 읽고 쓰는 실습. 어떤 내용을 어디서 가져왔는지 보고를 봐요.",
-    ("05", 1): "견적서 합계와 업로드 양식 합계가 맞는지 — AI가 스스로 대조해요.",
-    ("06", 1): "결과물이 두 개(계획서·협조 공문). 공문은 00_업무지침의 작성 규칙을 따랐는지 봐요.",
-    ("06", 2): "이미지 추출 → 웹 검색 → 배정 → 예산까지 여러 단계를 혼자 해요.",
-    ("07", 1): "시작 전에 묻는 질문에 답해요. 숫자는 엑셀에 있는 것만 썼는지 봐요.",
-    ("08", 1): "학교 양식 그대로 PPT가 나와요.",
-    ("08", 2): "같은 내용, 다른 옷. 디자인 가이드를 주면 스타일이 바뀌어요.",
-    ("09", 1): "정답 번호가 1~4번에 고르게 나뉘었는지, 템플릿 3행부터 채웠는지 봐요.",
+# ================================================================== 3 실습 (practices.py P 순서·개수 그대로: 쉬운 것 → 어려운 것)
+ACC = [PINK, RED, TEAL]
+CHECK = {  # (번호 뺀 실습 폴더 이름, 단계) → 확인할 것. 번호가 바뀌어도 그대로 맞게
+    ("다운로드정리", 1): "사진 폴더가 생겼는지, 0바이트 '흉내' 파일은 빠졌는지 확인해요.",
+    ("다운로드정리", 2): "AI가 사진을 직접 보고 꿀벌만 골랐는지 — 고른 파일 이름을 같이 봐요.",
+    ("다운로드정리", 3): "지우지 않고 '중복' 폴더로 옮겼는지, 만든 폴더와 옮긴 파일 수를 봐요.",
+    ("엑셀_설문통계", 1): "'통계' 시트가 수식으로 계산됐는지, 원본 시트는 그대로인지 봐요.",
+    ("엑셀_설문통계", 2): "'통계' 시트 아래에 표 하나와 막대 차트 하나가 생겼는지 봐요.",
+    ("엑셀_설문통계", 3): "'의견 정리' 시트가 건수 많은 순인지 봐요.",
+    ("행정처리_도움받기", 1): "견적서 합계와 업로드 양식 합계가 맞는지 — AI가 스스로 대조해요.",
+    ("한글표만들기", 1): "열과 행은 AI가 정해요. 원래 글 바로 아래에 표가 들어갔는지 봐요.",
+    ("한글표만들기", 2): "4반은 26명이에요. 한 줄 8명이면 4줄이 나와야 해요.",
+    ("한글표만들기", 3): "이름표 26장 — 장 수와 학생 수가 같은지 AI가 스스로 확인해요.",
+    ("한글표만들기", 4): "우유급식 미신청은 9명이에요.",
+    ("가정통신문_양식맞추기", 1): "머리 표가 그대로인지, 날짜 요일(6. 15.(월)~6. 19.(금), 6. 22.(월))이 맞는지 봐요.",
+    ("가정통신문_양식맞추기", 2): "실제 업무에선 '모르면 내게 물어봐'가 원칙이지만, 실습은 시간 때문에 신청 마감 같은 답을 프롬프트에 미리 넣었어요.",
+    ("가정통신문_양식맞추기", 3): "2027. 1. 15.~1. 25.는 11일간. 일수를 다시 계산했는지 확인해요.",
+    ("가정통신문_양식맞추기", 4): "다른 학교 양식으로 옮겨도 내용은 그대로. 오현초 흔적이 남았는지 마지막 보고를 봐요.",
+    ("작년도문서_업데이트", 1): "2026. 11. 11.은 수요일. 바꾼 곳 목록으로 빠진 곳을 점검해요.",
+    ("작년도문서_업데이트", 2): "열린 양식의 개조식 말투를 따라 했는지 봐요.",
+    ("작년도문서_업데이트", 3): "두 계획서를 같이 읽고 쓰는 실습. 어떤 내용을 어디서 가져왔는지 보고를 봐요.",
+    ("계획서로_기안문쓰기", 1): "훈련일 2026. 10. 28.(수)과 고색119안전센터 협조가 들어갔는지 봐요.",
+    ("계획서로_기안문쓰기", 2): "결과물은 새 공문 한 장. 공문서를 쓸 때 AI가 00_업무지침의 공문서 작성법 md를 읽고 따라요.",
+    ("계획서로_보고서쓰기", 1): "숫자는 엑셀에 있는 것만 썼는지 봐요. 실습이라 묻지 말고 바로 채우게 했어요.",
+    ("기초학력_인포그래픽", 1): "AI가 알려 준 숫자 목록을 엑셀과 대조해 봐요.",
+    ("계획서로_PPT만들기", 1): "학교 양식 그대로 PPT가 나와요.",
+    ("계획서로_PPT만들기", 2): "같은 내용, 다른 옷. 디자인 가이드를 주면 스타일이 바뀌어요.",
+    ("교과서로_퀴즈만들기", 1): "정답 번호가 1~4번에 고르게 나뉘었는지, 템플릿 3행부터 채웠는지 봐요.",
+    ("도전_AI과학의날", 1): "이미지 추출 → 웹 검색 → 배정 → 예산까지 여러 단계를 혼자 해요. 오래 걸리니 시켜 두고 다른 일을 해요.",
 }
+STEP_SECS = {"기본": 150, "보통": 180, "도전": 240}
+PRACTICE_SECS = {}  # 실습 번호 → 그 실습 장들의 초 (시간 계산용)
 for k, (no, folder, title, nav, lead, stps) in enumerate(P):
-    acc = ACC[k]
+    acc = ACC[k % 3]
     sec = f"{k + 3} {nav}"
     ps = prompts(folder)
-    add(sec, strip_tags(title.replace("<br />", " ")), section(no, title.replace("<br />", "<br>"), lead + f"<br><span class='kf'>inlineAI_실습 / {E(folder)}</span>", acc),
-        f"실습 {no}. {strip_tags(lead)} 새 에이전트로 시작하세요.", 20, acc, True)
+    assert len(ps) == len(stps), (no, len(ps), len(stps))
+    info = INFO[no]
+    start = MODE[info["mode"]]
+    n0 = len(SL)
+    tip = "" if info["mode"] == "agent" else " 새 에이전트로 열면 [이어서 작업하기] 카드에서 멈춰요."
+    extra = " 오래 걸리니 시켜 두고 다른 일을 해요." if info["level"] == "도전" else ""
+    add(sec, strip_tags(title.replace("<br />", " ")),
+        section(no, title.replace("<br />", "<br>"), lead + f"<br>{badges(no)}<span class='kf'>inlineAI_실습 / {E(folder)}</span>", acc),
+        f"실습 {no}. {strip_tags(lead)} {start}로 시작하세요.{tip}{extra}", 20, acc, True)
+    fkey = folder.split("_", 1)[1]
     for j, ((gt, gd, keys), pr) in enumerate(zip(stps, ps), 1):
+        if (fkey, j) not in CHECK:
+            print("확인 문장 없음:", no, fkey, j)
         add(sec, f"{no}-{j} {gt}", practice(no, j, gt, gd, keys, pr, acc),
-            f"{strip_tags(gd)} 사이트 실습 {no} 페이지에서 프롬프트를 [복사]해 붙여 넣어요. 확인: {CHECK.get((no, j), '')}",
-            240 if no in ("02", "04", "06") else 180, acc)
+            f"{strip_tags(gd)} 사이트 실습 {no} 페이지에서 프롬프트를 [복사]해 붙여 넣어요. 확인: {CHECK.get((fkey, j), '')}",
+            STEP_SECS[info["level"]], acc)
+    PRACTICE_SECS[no] = list(range(n0, len(SL)))
 
-# ================================================================== 4 클로드
-S4 = "12 클로드"
+S4 = f"{len(P) + 3} 클로드"
 add(S4, "클로드 코워크로 한 걸음 더", section("C", "클로드 코워크로<br>한 걸음 더", "오늘 익힌 습관이 그대로 통해요. 스킬·예약까지 더한 상위 호환이에요.", PINK),
     "마지막으로 같은 일을 클로드 코워크로 하는 법을 짧게 보여 드릴게요.", 20, PINK, True)
+_gpt = os.path.join(OUT, "assets", "shot", "chatgpt", "05_running.png")
+add(S4, "ChatGPT 앱 폴더 모드", shot("ChatGPT 앱 폴더 모드로도", "assets/shot/chatgpt/05_running.png", PINK, "같은 프롬프트, 다른 앱") if os.path.exists(_gpt)
+    else sentence(["ChatGPT 앱 폴더 모드로도", "같은 프롬프트로"], "캡처 예정 — 사이트 클로드 페이지에 붙일 자리", PINK, "d-md"),
+    "ChatGPT 데스크톱 앱도 폴더를 연결하면 같은 실습을 할 수 있어요. 오늘 프롬프트를 그대로 붙여 보세요. 한글 양식을 그대로 살리는 건 inline AI가 편하고, 대화와 검색은 ChatGPT 앱이 편해요.", 45)
 add(S4, "같은 습관, 더 많은 기능", cards("같은 습관, 더 많은 기능", [("프로젝트", "학교 일 묶음별로<br><b>자료·지침을 고정</b>"), ("스킬", "00_업무지침을<br><b>스킬로 올려</b> 늘 적용"),
     ("예약", "'매주 월요일 아침'처럼<br><b>정해진 때 알아서</b>")], PINK, "일단 던지기 · 내 컴퓨터에 초대 · 양식 주기는 똑같아요"),
     "클로드 데스크톱 앱의 코워크도 내 폴더를 맡기는 방식은 같아요. 여기에 프로젝트, 스킬, 예약이 더해져요.", 90)
@@ -248,7 +305,7 @@ add(S4, "교사를 위한 클로드", video("HmBVZ_679Ko", "교사를 위한 클
     "더 보고 싶은 분은 이 영상을 추천해요. 사이트 클로드 페이지에 링크가 있어요.", 30)
 
 # ================================================================== 정리
-S5 = "13 정리"
+S5 = f"{len(P) + 4} 정리"
 add(S5, "정리", section("✓", "정리 ·<br>내일부터 이렇게", "아침에 시켜 두고, 수업 다녀와서 확인해요.", INK),
     "정리하겠습니다.", 15, INK, True)
 add(S5, "확인하고 다듬는 사람", sentence(["내가 다 쓰는 게 아니라", "확인하고 다듬는 사람"], "AI가 초안을 쓰고, 나는 결재하듯 봐요", PINK),
@@ -256,11 +313,23 @@ add(S5, "확인하고 다듬는 사람", sentence(["내가 다 쓰는 게 아니
 add(S5, "내일부터 아침 루틴", steps("내일부터 아침 루틴", [("출근 10분", "오늘 할 문서를<br>에이전트에 맡기기"), ("수업", "AI는 일하고<br>나는 수업"),
     ("쉬는 시간", "결과 확인·다듬기<br>새 이름 파일만 보면 돼요")], PINK),
     "아침에 맡기고, 수업 다녀와서 확인하세요. 기다리는 시간이 없어져요.", 45)
-add(S5, "여러 AI에게 동시에", cards("여러 AI에게 동시에", [("에이전트 1", "가정통신문"), ("에이전트 2", "기안문"), ("에이전트 3", "품의"), ("에이전트 4", "수업 퀴즈")], PINK,
-    "주의: 한글 문서는 에이전트마다 다른 파일로 · 크레딧은 맡긴 만큼 쓰여요"),
-    "새 에이전트를 여러 개 열어 동시에 맡겨도 돼요. 단, 같은 한글 파일을 두 에이전트가 동시에 고치면 엉켜요.", 45)
+add(S5, "여러 AI에게 동시에", cards("여러 AI에게 동시에", [("새 에이전트 1", "다운로드<br>폴더 정리"), ("새 에이전트 2", "협의회<br>인포그래픽"),
+    ("새 에이전트 3·4", "삼각 이름표 ·<br>수업 퀴즈"), ("한/글 편집", "가정통신문<br><b>한 개만</b>")], PINK,
+    "새 에이전트끼리는 동시에 · 한/글·Excel 편집은 한 번에 하나 · 크레딧은 맡긴 만큼"),
+    "새 에이전트는 여러 개 열어 동시에 맡겨도 돼요. 폴더 정리, 인포그래픽, 삼각 이름표, 퀴즈 같은 일이요. 단, 한/글 편집하기·Excel 편집하기는 한 번에 하나씩만 돼요. 한글 문서는 하나 맡기고 나머지는 새 에이전트로 돌리세요.", 45)
 add(S5, "다시 보기", qr_slide("오늘 가져가는 것", ["실습 자료 · 프롬프트 · 업무 지침", "<b>내일 아침 하나만 맡겨 보세요</b>"], PINK),
     "사이트는 계속 열려 있어요. 내일 아침 딱 하나만 맡겨 보세요. 감사합니다.", 30)
+
+# ------------------------------------------------------------------ 시간: 80분(1시간 20분 내외)을 넘으면 뒤쪽 실습부터 노트에 '시간 남으면'
+LIMIT = 80 * 60
+tot = sum(x[6] for x in SL)
+OPT, rest = [], tot
+for x in reversed(P):
+    if rest <= LIMIT:
+        break
+    OPT.append(x[0])
+    rest -= sum(SL[i][6] for i in PRACTICE_SECS[x[0]])
+print(f"전체 {tot // 60}분 (80분에 맞추려면 뒤에서부터 {', '.join(sorted(OPT)) or '없음'} 조정 — 표시는 하지 않음)")
 
 # ------------------------------------------------------------------ 조립
 CSS = open(os.path.join(LEC, "lecture.css"), encoding="utf-8").read()
@@ -277,7 +346,10 @@ GATE = open(os.path.join(LEC, "gate.html"), encoding="utf-8").read()
 EXTRA = """
 .cover-sub{margin-top:28px;font-size:26px;color:rgba(255,255,255,.72)}
 .cover-url{margin-top:18px;font-size:30px;font-weight:800;color:#fff;letter-spacing:.01em}
-.kurl{font-size:34px!important}
+.kurl{font-size:34px!important;white-space:nowrap}
+.bdgs{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.bdg{display:inline-flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:#fff;border:2px solid rgba(255,255,255,.45);border-radius:999px;padding:6px 18px 6px 8px}
+.bdg i{font-style:normal;font-size:16px;font-weight:700;background:rgba(255,255,255,.16);border-radius:999px;padding:3px 10px}
 .kf{display:inline-block;margin-top:14px;font-size:20px;color:rgba(255,255,255,.55)}
 .kx{flex-direction:row;align-items:center;gap:36px;padding:52px 60px 66px}
 .kx .kl-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
@@ -347,19 +419,37 @@ doc = f'''<!doctype html>
 </script>
 </body></html>'''
 open(os.path.join(OUT, "lecture.html"), "w", encoding="utf-8").write(doc)
-tot = sum(s[6] for s in SL)
 print(f"강의안 {len(SL)}장 · 예상 {tot // 60}분")
 for i, s in enumerate(SL, 1):
     for m in re.findall(r'src="(assets/[^"]+)"', s[4]):
         if not os.path.exists(os.path.join(OUT, m)):
             print("없는 그림:", i, m)
+if MISSING:
+    print("아직 없는 미리보기(건너뜀):", ", ".join(MISSING))
 
 # ------------------------------------------------------------------ PDF (인쇄 모드 그대로, 열기 암호 = 연수 번호 1111)
 EDGE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-raw = os.path.join(HERE, "lecture_raw.pdf")
+TMP = os.path.join(OUT, "_pdfbuild")  # 레포가 아니라 출력 폴더 안에서만
+os.makedirs(TMP, exist_ok=True)
+raw = os.path.join(TMP, "lecture_raw.pdf")
+if os.path.exists(raw):
+    os.remove(raw)
 url = pathlib.Path(os.path.abspath(os.path.join(OUT, "lecture.html"))).as_uri() + "?print=1&code=1111"
-subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--user-data-dir=" + os.path.join(HERE, "edgeprof_pdf"),
-                "--no-pdf-header-footer", "--virtual-time-budget=30000", "--print-to-pdf=" + raw, url], capture_output=True, timeout=300)
+# Edge가 멈춰도 빌드가 끝나도록: 출력은 버리고(파이프 대기 없음), 제한 시간 넘으면 프로세스 트리째 종료
+proc = subprocess.Popen([EDGE, "--headless=new", "--disable-gpu", "--no-first-run", "--user-data-dir=" + os.path.join(TMP, "edgeprof"),
+                         "--no-pdf-header-footer", "--virtual-time-budget=30000", "--print-to-pdf=" + raw, url],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+try:
+    proc.wait(timeout=180)
+except subprocess.TimeoutExpired:
+    subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
+    try:
+        proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        pass
+    print("Edge 제한 시간(180초) 초과 — 종료함")
+if not os.path.exists(raw) or os.path.getsize(raw) == 0:
+    sys.exit("PDF 만들기 실패: Edge가 lecture_raw.pdf를 만들지 못함")
 r = PdfReader(raw)
 w = PdfWriter()
 for pg in r.pages:

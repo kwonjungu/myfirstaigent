@@ -1,0 +1,3 @@
+_pdfbuild/
+__pycache__/
+tools/speedloop/runs_*.log
