@@ -143,7 +143,8 @@ def links(t):
     btn = "".join((f'<a class="btn {"btn-primary" if i == 0 else "btn-secondary"}" href="{E(u)}" download>{E(l)} ↓</a>' if u.startswith("download/") else
                    f'<a class="btn {"btn-primary" if i == 0 else "btn-secondary"}" href="{E(u)}" target="_blank" rel="noopener">{E(l)} &#8599;</a>')
                   for i, (l, u) in enumerate(t["links"]))
-    note = ("직접 눌러 보는 연습 파일이에요." if t["links"][0][1].startswith("download/")
+    note = ("직접 눌러 보는 연습 파일이에요." if "연습" in t["links"][0][0]
+            else "완성본과 교실용 무료 프로그램이 함께 들어 있어요." if t["links"][0][1].startswith("download/")
             else "무료 · 공식 배포처로 바로 가요. 학교 업무용 PC는 설치가 막혀 있을 수 있어요.")
     return f'\n      <section class="tip-dl" aria-label="내려받기"><h3>내려받기</h3><p>{note}</p><div class="tip-dl-btns">{btn}</div></section>'
 
@@ -152,12 +153,21 @@ def links(t):
 for i, t in enumerate(TIPS):
     prev = TIPS[i - 1] if i > 0 else None
     nxt = TIPS[i + 1] if i + 1 < N else None
-    svg = key_svg(t["keys"])
-    open(os.path.join(ROOT, KEYS, f'{t["no"]}.svg'), "w", encoding="utf-8", newline="\n").write(
-        key_svg(t["keys"], standalone=True) + "\n")
+    svg = key_svg(t["keys"]) if t["keys"] else ""
+    if t["keys"]:
+        open(os.path.join(ROOT, KEYS, f'{t["no"]}.svg'), "w", encoding="utf-8", newline="\n").write(
+            key_svg(t["keys"], standalone=True) + "\n")
     a = [s for s in t["shots"] if s[0].endswith("_a.png")]
     rest = [s for s in t["shots"] if not s[0].endswith("_a.png")]
     steps = "".join(f"<li>{E(s)}</li>" for s in t["steps"])
+    pr = ""
+    if t.get("prompt"):
+        pr = (f'<div class="pstep tip-prompt"><div class="prompt-list"><div class="prompt-row"><div class="pbody"><span class="ptext">{E(t["prompt"])}</span></div>'
+              f'<button class="prompt-copy" type="button">복사</button></div></div>')
+        if t.get("followups"):
+            pr += '<p class="tip-fu-h">이어서 이렇게</p><ul class="tip-fu">' + "".join(
+                f'<li><span>{E(f)}</span><button class="prompt-copy" type="button" data-copy="{E(f.split(" (")[0])}">복사</button></li>' for f in t["followups"]) + "</ul>"
+        pr += "</div>"
     body = f'''<main class="shell page tip-page" id="top">
     <p class="crumb"><a class="btn btn-secondary btn-sm" href="tips.html">← 하루 팁 목록</a><span class="here">지금 여기 · 하루 한 팁 › <strong>Day {t["no"]}</strong><span class="pos">{i + 1} / {N}</span></span></p>
     <article class="tip" aria-labelledby="tip-h">
@@ -165,7 +175,7 @@ for i, t in enumerate(TIPS):
         <p class="tip-kicker">하루 한 팁 · Day {t["no"]}</p>
         <h2 id="tip-h">{E(t["title"])}</h2>
         <p class="tip-badges">{badges(t)}</p>
-        <div class="tip-keys">{svg}</div>
+        {f'<div class="tip-keys">{svg}</div>' if svg else ""}
       </header>
       <section class="tip-sec">
         <h3><span class="tip-step">1</span>이런 때</h3>
@@ -174,7 +184,7 @@ for i, t in enumerate(TIPS):
       </section>
       <section class="tip-sec">
         <h3><span class="tip-step">2</span>이렇게</h3>
-        <ol class="tip-how">{steps}</ol>
+        <ol class="tip-how">{steps}</ol>{pr}
         <div class="tip-shots n{len(rest)}">{"".join(shot(*s) for s in rest)}</div>
       </section>
       <p class="tip-extra"><b>덧붙임</b>{E(t["extra"])}</p>{links(t)}
@@ -199,7 +209,7 @@ if os.path.exists(os.path.join(ROOT, PZIP)):
 
 cards = "".join(
     f'<a class="tip-card" id="tip-{t["no"]}" href="t{t["no"]}.html"><span class="tip-card-no">Day {t["no"]}</span>'
-    f'<span class="tip-card-keys">{key_svg(t["keys"], scale=0.6)}</span><b>{E(t["title"])}</b>'
+    f'<span class="tip-card-keys">{key_svg(t["keys"], scale=0.6) if t["keys"] else '<span class="tip-card-ai">AI로 만들기</span>'}</span><b>{E(t["title"])}</b>'
     f'<span class="hub-sub">{E(t["when"])}</span><span class="tip-badges">{badges(t)}</span></a>'
     for t in TIPS)
 body = f'''<main class="shell page tip-page" id="top">

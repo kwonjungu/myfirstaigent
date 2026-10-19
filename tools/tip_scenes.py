@@ -403,6 +403,21 @@ S["16_muldiv_b"] = page(desktop(hwp_win(200, 30, 880, 680, "곱셈과 나눗셈 
                        + key("Alt 누른 채 0215 · 0247") + tag("진짜 곱하기·나누기 기호로", "누른 뒤"))
 
 
+lecture = ('<div style="position:absolute;inset:0;background:#111"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#888;font-size:20px">'
+           '<div style="text-align:center"><div style="font-size:54px">⏸</div>영상이 멈췄어요 (버퍼링)</div></div>'
+           '<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#333"><div style="width:38%;height:6px;background:#dc2626"></div></div></div>')
+S["20_soundwatch_a"] = page(desktop(win(40, 30, 620, 420, "원격 연수 (가상) - Microsoft Edge", lecture, "#0ea5e9")
+    + hwp_win(420, 120, 820, 600, "학급 운영 계획.hwp - 한글", '<h1 style="font-size:18px">2학기 학급 운영 계획</h1><p>1. 목적: …<br>2. 운영 방침: …</p>', pw=520, ph=560)
+    + '<div style="position:absolute;left:60px;top:470px;background:#fff;border:2px solid #f59e0b;border-radius:10px;padding:10px 14px;font-weight:700">연수 영상이 멈춘 걸 모르고 20분째…</div>'
+    + tag("연수 틀어 두고 다른 일을 할 때")))
+alert = ('<div style="position:absolute;right:12px;bottom:12px;width:640px;height:270px;background:#dc2626;color:#fff;padding:22px 26px;box-shadow:0 10px 30px rgba(0,0,0,.35)">'
+         '<div style="font-size:46px;font-weight:900">소리 끊김!</div><div style="font-size:24px;font-weight:700;margin-top:10px">10초 넘게 소리가 없어요<br>연수 다음으로 넘어가세요</div>'
+         '<div style="position:absolute;right:24px;bottom:20px;background:#fff;color:#111;font-weight:800;font-size:18px;padding:10px 30px">확인</div></div>')
+S["20_soundwatch_b"] = page(desktop(win(40, 30, 620, 420, "원격 연수 (가상) - Microsoft Edge", lecture, "#0ea5e9")
+    + hwp_win(420, 60, 820, 600, "학급 운영 계획.hwp - 한글", '<h1 style="font-size:18px">2학기 학급 운영 계획</h1><p>1. 목적: …<br>2. 운영 방침: …</p>', pw=520, ph=560)
+    + alert) + key("10초 무음") + tag("빨강·노랑으로 깜빡이며 알려 줘요", "알림"))
+
+
 # ------------------------------------------------------------------ 찍기
 def main():
     want = sys.argv[1:]
