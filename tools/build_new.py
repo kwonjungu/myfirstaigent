@@ -261,6 +261,7 @@ def topbar(current):
       <a class="deck-tab deck-tab-padlet" href="https://portal.inline-ai.com/invitation-promotion?code=K2YERY3H" target="_blank" rel="noopener">초대 이벤트 &#8599;</a>
       <a class="deck-tab" href="lecture.html" title="강의안 (번호 입력 후 열려요)">강의안 &#128274;</a>
       <button class="deck-tab addr-open" type="button" title="사이트 주소와 QR 크게 보기">주소 · QR</button>
+      <span class="rel-set" aria-label="수업용 AI 세트"><span class="rel-k">수업용 AI 세트</span><a class="rel-a" href="https://classroomaicontents.vercel.app/" target="_blank" rel="noopener">AI 콘텐츠 &#8599;</a><a class="rel-a" href="https://classroomaicontents.vercel.app/notebook/index.html" target="_blank" rel="noopener">노트북 &#8599;</a></span>
       <a class="deck-tab deck-tab-tip" href="tips.html" title="하루 한 팁 · 교실 단축키">하루 팁</a>
     </div>
   </div>
