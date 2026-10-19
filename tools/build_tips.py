@@ -136,6 +136,17 @@ def badges(t):
     return b
 
 
+def links(t):
+    if not t.get("links"):
+        return ""
+    btn = "".join((f'<a class="btn {"btn-primary" if i == 0 else "btn-secondary"}" href="{E(u)}" download>{E(l)} ↓</a>' if u.startswith("download/") else
+                   f'<a class="btn {"btn-primary" if i == 0 else "btn-secondary"}" href="{E(u)}" target="_blank" rel="noopener">{E(l)} &#8599;</a>')
+                  for i, (l, u) in enumerate(t["links"]))
+    note = ("직접 눌러 보는 연습 파일이에요." if t["links"][0][1].startswith("download/")
+            else "무료 · 공식 배포처로 바로 가요. 학교 업무용 PC는 설치가 막혀 있을 수 있어요.")
+    return f'\n      <section class="tip-dl" aria-label="내려받기"><h3>내려받기</h3><p>{note}</p><div class="tip-dl-btns">{btn}</div></section>'
+
+
 # ------------------------------------------------------------------ 팁 한 페이지
 for i, t in enumerate(TIPS):
     prev = TIPS[i - 1] if i > 0 else None
@@ -165,7 +176,7 @@ for i, t in enumerate(TIPS):
         <ol class="tip-how">{steps}</ol>
         <div class="tip-shots n{len(rest)}">{"".join(shot(*s) for s in rest)}</div>
       </section>
-      <p class="tip-extra"><b>덧붙임</b>{E(t["extra"])}</p>
+      <p class="tip-extra"><b>덧붙임</b>{E(t["extra"])}</p>{links(t)}
     </article>
     <nav class="pager" aria-label="이전 다음">''' + (
         f'<a class="btn btn-secondary" href="t{prev["no"]}.html">← Day {prev["no"]}</a>' if prev else "<span></span>") + \
@@ -186,7 +197,6 @@ body = f'''<main class="shell page tip-page" id="top">
     <section class="tip-hero">
       <p class="tip-kicker">하루 한 팁 · 교실 단축키 {N}선</p>
       <h2>오늘 하나만<br />손에 익혀요</h2>
-      <p class="lead">1번에 가까울수록 더 결정적인 팁이에요. 16·17은 설치하는 무료 프로그램이에요.</p>
       <div class="tip-today" data-tip-start="{START}" data-tip-count="{N}" hidden>
         <span class="tip-today-k">오늘의 팁</span><a class="tip-today-a" href="t01.html"></a>
       </div>

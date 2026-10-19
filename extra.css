@@ -179,3 +179,7 @@ button.deck-tab { border: 0; cursor: pointer; font: inherit; }
 @media (max-width: 720px) {
   .tip-shots.n2, .tip-shots.n3 { grid-template-columns: 1fr; }
 }
+.tip-dl { margin-top: 20px; background: var(--soft-cloud); border-radius: 14px; padding: 16px 18px; }
+.tip-dl h3 { font-size: 18px; margin: 0 0 4px; }
+.tip-dl p { font-size: 14px; color: var(--mute); margin: 0 0 12px; }
+.tip-dl-btns { display: flex; flex-wrap: wrap; gap: 8px; }

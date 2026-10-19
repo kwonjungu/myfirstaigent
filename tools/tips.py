@@ -4,7 +4,8 @@
          특수 이름: "Win"(창 아이콘), "휠"(마우스 휠 그림)
    app:  특정 프로그램에서만 되면 그 이름(키캡 위 배지). 비우면 Windows 어디서나
    shots: (파일 이름, 설명). assets/tips/shot/ 에 그 파일이 없으면 '캡처 자리'로 보인다.
-          a = 이런 때(문제 상황), b·c = 누른 뒤(해결). 설명 끝 [사진]·[도식]은 캡처로 못 찍는 장면"""
+          a = 이런 때(문제 상황), b·c = 누른 뒤(해결). 설명 끝 [사진]·[도식]은 캡처로 못 찍는 장면
+   links: (글, 주소) — 설치 프로그램 내려받기 단추"""
 
 START = "2026-10-19"  # 오늘의 팁 1번이 되는 날. 평일만 세고, 17개를 다 돌면 1번부터 다시
 
@@ -68,6 +69,7 @@ TIPS = [
          when="정답 슬라이드가 미리 보이면 안 될 때, 학생들 시선을 선생님께 모을 때",
          steps=["B = 검은 화면, W = 흰 화면", "아무 키나 누르면 슬라이드로 돌아와요."],
          extra="Ctrl + P = 펜으로 바로 판서, E = 판서 지우기, Ctrl + A = 다시 화살표",
+         links=[("연습용 PPT 내려받기 (20장)", "download/%ED%95%98%EB%A3%A8%ED%8C%81_PPT%EC%97%B0%EC%8A%B5.pptx")],
          shots=[("08_pptblack_a.png", "정답이 먼저 보이는 슬라이드"),
                 ("08_pptblack_b.png", "B를 눌러 검게 가린 화면")]),
     dict(no="09", cat="class", slug="pptfrom", title="원하는 슬라이드부터 바로",
@@ -76,6 +78,7 @@ TIPS = [
          steps=["F5 = 처음부터, Shift + F5 = 지금 보고 있는 슬라이드부터",
                 "슬라이드쇼 중에 숫자 + Enter = 그 번호 슬라이드로 바로 이동 (예: 12 Enter)"],
          extra="학생 질문에 '아까 그 장면'을 다시 보여 줄 때 아주 유용해요.",
+         links=[("연습용 PPT 내려받기 (20장)", "download/%ED%95%98%EB%A3%A8%ED%8C%81_PPT%EC%97%B0%EC%8A%B5.pptx")],
          shots=[("09_pptfrom_a.png", "12번 슬라이드에서 멈춘 편집 화면"),
                 ("09_pptfrom_b.png", "12번부터 시작된 슬라이드쇼")]),
     dict(no="10", cat="doc", slug="capture", title="화면 일부만 캡처",
@@ -128,7 +131,9 @@ TIPS = [
          steps=["Ctrl + 1 = 확대 (휠로 배율 조절, 오른쪽 클릭으로 끝)",
                 "Ctrl + 2 = 화면 위 판서 (R 빨강 · G 초록 · B 파랑 · E 모두 지우기 · W 흰 칠판 · Esc 끝)",
                 "Ctrl + 3 = 타이머 (↑ / ↓ 로 분 조절, Esc 끝)"],
-         extra="마이크로소프트가 만든 무료 프로그램. 어떤 화면 위에서든 작동해요. Microsoft Store에서 'ZoomIt' 검색",
+         extra="마이크로소프트가 만든 무료 프로그램. 어떤 화면 위에서든 작동해요. 설치 없이 ZoomIt64.exe를 더블클릭하면 바로 실행돼요.",
+         links=[("ZoomIt 내려받기 (zip)", "https://download.sysinternals.com/files/ZoomIt.zip"),
+                ("공식 안내 페이지", "https://learn.microsoft.com/sysinternals/downloads/zoomit")],
          shots=[("16_zoomit_a.png", "작은 그림을 설명해야 하는 화면"),
                 ("16_zoomit_b.png", "확대하고 그 위에 판서한 화면"),
                 ("16_zoomit_c.png", "TV에 크게 띄운 타이머")]),
@@ -139,6 +144,8 @@ TIPS = [
                 "Ctrl + ` (숫자 1 왼쪽 키) → 복사 목록에서 골라 Enter",
                 "Ctrl·Shift로 여러 개를 골라 Enter → 한꺼번에 붙여넣기"],
          extra="껐다 켜도 기록이 남고, 글자를 쳐서 예전 복사 내용도 찾을 수 있어요. 개인정보를 복사했다면 목록에서 지우고, 공용 PC에는 설치하지 마세요.",
+         links=[("Ditto 내려받기 (GitHub)", "https://github.com/sabrogden/Ditto/releases/latest"),
+                ("공식 홈페이지", "https://ditto-cp.sourceforge.io/")],
          shots=[("17_ditto_a.png", "복사가 덮어써져 원본으로 다시 돌아가는 상황"),
                 ("17_ditto_b.png", "디토 목록에서 골라 붙이기")]),
 ]
