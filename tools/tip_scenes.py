@@ -330,12 +330,12 @@ def notice_pages(tight):
 S["13_hwpspace_a"] = page(desktop(notice_pages(False) + '<div style="position:absolute;left:840px;top:630px;background:#fee2e2;color:#b91c1c;font-weight:800;padding:8px 14px;border-radius:8px">← 두 줄이 2쪽으로 넘침</div>'
                           + tag("가정통신문이 딱 두 줄 넘쳐 2쪽이 될 때")))
 S["13_hwpspace_b"] = page(desktop(notice_pages(True) + key("Alt + Shift + N") + tag("자간을 줄이니 1쪽에 쏙", "누른 뒤")))
-sc = [["번호", "이름", "국어", "수학", "사회", "합계"]] + [[i + 1, n, 80 + (i * 7) % 19, 75 + (i * 5) % 23, 82 + (i * 3) % 15, ""] for i, n in enumerate(STUDENTS[:8])]
-S["14_autosum_a"] = page(desktop(excel_win(100, 30, 1080, 680, sc, sel=(2, 5)) + tag("과목 점수를 더한 합계 칸을 채울 때")))
-sc2 = [r[:] for r in sc]
-for r in sc2[1:]:
-    r[5] = r[2] + r[3] + r[4]
-S["14_autosum_b"] = page(desktop(excel_win(100, 30, 1080, 680, sc2, sel=(2, 5), fx="=SUM(C2:E2)") + key("Alt + =") + tag("합계가 바로 · 아래로 채우기만", "누른 뒤")))
+items14 = [("색종이(묶음)", 20), ("풀", 30), ("가위", 28), ("셀로판테이프", 12), ("도화지", 100)]
+log = [["날짜", "물품", "수량", "가져간 반", "확인"]] + [["2026-10-1" + str(5 + k) if k < 3 else "", n, q, f"{3 + k % 3}-{1 + k}", "○" if k < 3 else ""] for k, (n, q) in enumerate(items14)]
+S["14_today_a"] = page(desktop(excel_win(100, 30, 1080, 680, log, sel=(5, 0), title="학년 물품 대장 (가상).xlsx - Excel") + tag("물품 대장·출결 기록에 날짜를 적을 때")))
+log2 = [r[:] for r in log]
+log2[4][0] = "2026-10-20"
+S["14_today_b"] = page(desktop(excel_win(100, 30, 1080, 680, log2, sel=(5, 0), title="학년 물품 대장 (가상).xlsx - Excel") + key("Ctrl + ;") + tag("오늘 날짜가 바로 들어가요", "누른 뒤")))
 hd = lambda s: ('<h1>학부모 공개수업 안내</h1>'
                 f'<p style="font-size:20px;font-weight:800">대상: <span style="outline:3px solid {"#dc2626" if s == "1.2" else "#ed1aa0"};outline-offset:3px;border-radius:3px">{s}학년</span> 학부모님</p><p>{s}학년 학부모님께서는 11월 5일(목) 2교시에 각 교실로 오시기 바랍니다.</p>')
 S["15_middot_a"] = page(desktop(hwp_win(200, 30, 880, 680, "공개수업 안내.hwp - 한글", hd("1.2"))
@@ -346,16 +346,16 @@ cell = ('<div style="position:absolute;inset:0;background:#fff;padding:40px 60px
         '<svg style="position:absolute;left:540px;top:290px" width="180" height="120" viewBox="0 0 180 120"><ellipse cx="90" cy="60" rx="85" ry="55" fill="#dcfce7" stroke="#15803d" stroke-width="3"/>'
         '<circle cx="70" cy="55" r="16" fill="#7c3aed"/><circle cx="120" cy="40" r="6" fill="#16a34a"/><circle cx="125" cy="75" r="6" fill="#16a34a"/><circle cx="45" cy="85" r="5" fill="#16a34a"/></svg>'
         '<div style="position:absolute;left:560px;top:415px;font-size:12px;color:#666">현미경 사진 (작게 실림)</div></div>')
-S["16_zoomit_a"] = page(classroom_tv(cell, "그림이 너무 작아 설명하기 어려움") + tag("TV 속 작은 그림을 짚어 설명할 때"))
+S["17_zoomit_a"] = page(classroom_tv(cell, "그림이 너무 작아 설명하기 어려움") + tag("TV 속 작은 그림을 짚어 설명할 때"))
 cellbig = ('<div style="position:absolute;inset:0;background:#fff"><svg style="position:absolute;left:40px;top:10px" width="700" height="430" viewBox="0 0 180 120">'
            '<ellipse cx="90" cy="60" rx="85" ry="55" fill="#dcfce7" stroke="#15803d" stroke-width="2"/><circle cx="70" cy="55" r="16" fill="#7c3aed"/>'
            '<circle cx="120" cy="40" r="6" fill="#16a34a"/><circle cx="125" cy="75" r="6" fill="#16a34a"/><circle cx="45" cy="85" r="5" fill="#16a34a"/>'
            '<ellipse cx="70" cy="55" rx="24" ry="22" fill="none" stroke="#dc2626" stroke-width="1.6"/><path d="M95 50 Q120 20 150 18" stroke="#dc2626" stroke-width="1.6" fill="none"/>'
            '<text x="118" y="14" font-size="9" fill="#dc2626" font-weight="700">핵</text></svg></div>')
-S["16_zoomit_b"] = page(classroom_tv(cellbig, "확대한 채 그 위에 빨간 펜으로") + key("Ctrl + 1 → Ctrl + 2") + tag("크게 보여 주고 바로 판서", "누른 뒤"))
-S["16_zoomit_c"] = page(classroom_tv('<div style="position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:190px;font-weight:300;color:#111">4:59</div>',
+S["17_zoomit_b"] = page(classroom_tv(cellbig, "확대한 채 그 위에 빨간 펜으로") + key("Ctrl + 1 → Ctrl + 2") + tag("크게 보여 주고 바로 판서", "누른 뒤"))
+S["17_zoomit_c"] = page(classroom_tv('<div style="position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:190px;font-weight:300;color:#111">4:59</div>',
                                      "모둠 활동 5분 · 남은 시간이 크게") + key("Ctrl + 3") + tag("쉬는 시간·활동 시간 타이머", "누른 뒤"))
-S["17_ditto_a"] = page(desktop(
+S["18_ditto_a"] = page(desktop(
     win(60, 40, 560, 600, "학교 기본 정보 메모.txt - 메모장", '<div style="padding:18px;font-size:15px;line-height:2">학교 주소: 가상시 가상로 123<br>대표 전화: 000-123-4567<br>행정실: 000-123-4568<br>'
         '<span style="background:#bfdbfe">담임 인사말: 안녕하세요, 3학년 2반 담임입니다.</span><br>현장체험 링크: example.kr/trip</div>', "#64748b")
     + hwp_win(660, 40, 560, 600, "가정통신문.hwp - 한글", '<h1 style="font-size:16px">가정통신문</h1><p>주소: <span style="background:#fde68a">가상시 가상로 123</span><br>전화: ?<br>인사말: ?</p>', pw=440, ph=520)
@@ -364,7 +364,7 @@ S["17_ditto_a"] = page(desktop(
 items = ["담임 인사말: 안녕하세요, 3학년 2반 담임입니다.", "행정실: 000-123-4568", "대표 전화: 000-123-4567", "학교 주소: 가상시 가상로 123", "현장체험 링크: example.kr/trip",
          "붙임 1부. 끝.", "준비물: 도시락, 물, 돗자리"]
 dl = "".join(f'<div style="padding:9px 12px;font-size:13.5px;border-bottom:1px solid #eee;background:{"#cce4ff" if i in (0, 1, 2) else "#fff"}">{i}  {t}</div>' for i, t in enumerate(items))
-S["17_ditto_b"] = page(desktop(
+S["18_ditto_b"] = page(desktop(
     hwp_win(330, 40, 860, 640, "가정통신문.hwp - 한글", '<h1 style="font-size:16px">가정통신문</h1><p>주소: 가상시 가상로 123<br>전화: 000-123-4567 / 행정실 000-123-4568<br>인사말: 안녕하세요, 3학년 2반 담임입니다.</p>', pw=520, ph=520)
     + win(60, 140, 430, 380, "Ditto", f'<div style="padding:8px;border-bottom:1px solid #ddd;font-size:13px;color:#888">🔍 검색</div>{dl}', "#1d4ed8")
     + key("Ctrl + `") + tag("여러 개 골라 Enter → 한꺼번에", "누른 뒤")))
@@ -378,19 +378,29 @@ scan = ('<div style="position:absolute;inset:0;background:#525659"><div style="p
         '2. 각 학교에서는 방학식 전 안전교육 시간에 활용하여 주시기 바랍니다.<br>　가. 대상: 초등학교 전 학년<br>　나. 내용: 빙판길·난방기구·감염병 예방</div>'
         '<div style="position:absolute;right:60px;bottom:120px;width:90px;height:90px;border:3px solid #c0392b;border-radius:50%;color:#c0392b;'
         'display:flex;align-items:center;justify-content:center;font-weight:900;transform:rotate(-12deg)">직인</div></div></div>')
-S["18_ocr_a"] = page(desktop(win(120, 30, 1040, 680, "스캔_안전교육공문 (가상).pdf - Edge", scan, "#dc2626")
+S["19_ocr_a"] = page(desktop(win(120, 30, 1040, 680, "스캔_안전교육공문 (가상).pdf - Edge", scan, "#dc2626")
     + '<div style="position:absolute;left:420px;top:260px;width:430px;height:26px;background:rgba(37,99,235,.18);border:1px dashed #2563eb"></div>'
     + '<div style="position:absolute;left:860px;top:250px;background:#fff;border:2px solid #f59e0b;border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px">드래그해도 글자가 안 잡혀요 (그림이라서)</div>'
     + tag("스캔한 공문 글자를 다시 쳐야 할 때")))
-S["18_ocr_b"] = page(desktop(win(120, 30, 1040, 680, "스캔_안전교육공문 (가상).pdf - Edge", scan, "#dc2626"))
+S["19_ocr_b"] = page(desktop(win(120, 30, 1040, 680, "스캔_안전교육공문 (가상).pdf - Edge", scan, "#dc2626"))
     + '<div style="position:absolute;left:400px;top:240px;width:600px;height:150px;border:2px solid #fff;box-shadow:0 0 0 2000px rgba(0,0,0,.5)"></div>'
     + '<div style="position:absolute;left:470px;top:680px;background:#fff;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.3)">✓ 텍스트를 클립보드에 복사했어요</div>'
     + key("Win + Shift + T") + tag("글자 부분을 끌면 인식해서 복사", "누른 뒤"))
-S["18_ocr_c"] = page(desktop(hwp_win(160, 30, 960, 680, "안전교육 계획 기안.hwp - 한글",
+S["19_ocr_c"] = page(desktop(hwp_win(160, 30, 960, 680, "안전교육 계획 기안.hwp - 한글",
     '<h1 style="font-size:18px">겨울방학 안전교육 계획</h1><div style="outline:4px solid #ed1aa0;outline-offset:6px">'
     '1. 겨울방학 중 학생 안전사고 예방을 위하여 붙임 자료를 안내합니다.<br>2. 각 학교에서는 방학식 전 안전교육 시간에 활용하여 주시기 바랍니다.<br>'
     '　가. 대상: 초등학교 전 학년<br>　나. 내용: 빙판길·난방기구·감염병 예방</div><p style="margin-top:22px">3. 본교 운영: </p>', pw=600, ph=620)
     + key("Ctrl + V") + tag("다시 칠 필요 없이 글자로 붙어요", "붙인 뒤")))
+
+
+hw = lambda a, b, c, d: ('<h1>곱셈과 나눗셈 (가상 학습지)</h1><p style="font-size:22px;line-height:2.4;font-family:Batang,serif">'
+                          f'1) 3 {a} 4 = ____<br>2) 12 {b} 3 = ____<br>3) 25 {c} 5 = ____<br>4) 7 {d} 6 = ____</p>')
+S["16_muldiv_a"] = page(desktop(hwp_win(200, 30, 880, 680, "곱셈과 나눗셈 학습지.hwp - 한글", hw(*(f'<b style="color:#dc2626">{c}</b>' for c in ("x", "/", "/", "x"))))
+                       + '<div style="position:absolute;left:760px;top:300px;background:#fee2e2;color:#b91c1c;font-weight:800;padding:8px 14px;border-radius:8px">x 와 / 는 수학 기호가 아니에요</div>'
+                       + tag("수학 학습지에 x, / 로 쓰고 있을 때")))
+S["16_muldiv_b"] = page(desktop(hwp_win(200, 30, 880, 680, "곱셈과 나눗셈 학습지.hwp - 한글",
+                       hw(*('<b style="color:#ed1aa0">×</b>', '<b style="color:#ed1aa0">÷</b>', '<b style="color:#ed1aa0">÷</b>', '<b style="color:#ed1aa0">×</b>'))))
+                       + key("Alt 누른 채 0215 · 0247") + tag("진짜 곱하기·나누기 기호로", "누른 뒤"))
 
 
 # ------------------------------------------------------------------ 찍기

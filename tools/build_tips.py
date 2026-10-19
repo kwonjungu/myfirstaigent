@@ -193,7 +193,7 @@ PACK = ""
 if os.path.exists(os.path.join(ROOT, PZIP)):
     mb = os.path.getsize(os.path.join(ROOT, PZIP)) / 1024 / 1024
     PACK = (f'      <div class="tip-pack"><div><b>무료 프로그램 한 번에 받기</b>'
-            f'<span>줌잇 · 디토 · 에브리싱(파일 찾기) · 연수 소리 끊김 알림 + 직접 만드는 프롬프트. PowerToys(Day 18)는 커서 따로 받아요.</span></div>'
+            f'<span>줌잇 · 디토 · 에브리싱(파일 찾기) · 연수 소리 끊김 알림 + 직접 만드는 프롬프트. PowerToys(Day 19)는 커서 따로 받아요.</span></div>'
             f'<div class="tip-pack-btns"><a class="btn btn-primary" href="{quote(PZIP)}" download>설치 프로그램 zip ({mb:.0f}MB) ↓</a>'
             f'<a class="btn btn-secondary" href="https://github.com/microsoft/PowerToys/releases/latest" target="_blank" rel="noopener">PowerToys &#8599;</a></div></div>')
 
