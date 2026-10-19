@@ -65,7 +65,7 @@ TIPS = [
          shots=[("07_incognito_a.png", "공용 PC 브라우저에 내 계정이 로그인된 채 남은 화면"),
                 ("07_incognito_b.png", "시크릿 창 안내 화면")]),
     dict(no="08", cat="class", slug="pptblack", title="슬라이드쇼 중 화면 가리기",
-         keys=["B", "/", "W"], app="PPT 슬라이드쇼 중",
+         keys=["B", "/", "W"], app="PPT·한쇼 슬라이드쇼 중",
          when="정답 슬라이드가 미리 보이면 안 될 때, 학생들 시선을 선생님께 모을 때",
          steps=["B = 검은 화면, W = 흰 화면", "아무 키나 누르면 슬라이드로 돌아와요."],
          extra="Ctrl + P = 펜으로 바로 판서, E = 판서 지우기, Ctrl + A = 다시 화살표",
