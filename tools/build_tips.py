@@ -7,6 +7,7 @@
    캡처는 assets/tips/shot/ 에 tips.py의 파일 이름으로 넣고 다시 돌리면 '캡처 자리'가 사진으로 바뀐다.
    사용: python tools/build_tips.py"""
 import os, re, sys, glob, html
+from urllib.parse import quote
 sys.stdout.reconfigure(encoding="utf-8")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -187,6 +188,15 @@ for i, t in enumerate(TIPS):
     open(os.path.join(ROOT, f't{t["no"]}.html'), "w", encoding="utf-8", newline="\n").write(page)
 
 # ------------------------------------------------------------------ 목록
+PZIP = "download/하루팁_설치프로그램.zip"
+PACK = ""
+if os.path.exists(os.path.join(ROOT, PZIP)):
+    mb = os.path.getsize(os.path.join(ROOT, PZIP)) / 1024 / 1024
+    PACK = (f'      <div class="tip-pack"><div><b>무료 프로그램 한 번에 받기</b>'
+            f'<span>줌잇 · 디토 · 에브리싱(파일 찾기) · 연수 소리 끊김 알림 + 직접 만드는 프롬프트. PowerToys(Day 18)는 커서 따로 받아요.</span></div>'
+            f'<div class="tip-pack-btns"><a class="btn btn-primary" href="{quote(PZIP)}" download>설치 프로그램 zip ({mb:.0f}MB) ↓</a>'
+            f'<a class="btn btn-secondary" href="https://github.com/microsoft/PowerToys/releases/latest" target="_blank" rel="noopener">PowerToys &#8599;</a></div></div>')
+
 cards = "".join(
     f'<a class="tip-card" id="tip-{t["no"]}" href="t{t["no"]}.html"><span class="tip-card-no">Day {t["no"]}</span>'
     f'<span class="tip-card-keys">{key_svg(t["keys"], scale=0.6)}</span><b>{E(t["title"])}</b>'
@@ -200,6 +210,7 @@ body = f'''<main class="shell page tip-page" id="top">
       <div class="tip-today" data-tip-start="{START}" data-tip-count="{N}" hidden>
         <span class="tip-today-k">오늘의 팁</span><a class="tip-today-a" href="t01.html"></a>
       </div>
+{PACK}
     </section>
     <div class="tip-grid">{cards}</div>
   </main>'''
