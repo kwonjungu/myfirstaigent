@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/tip", "destination": "/tips.html" }
+  ],
+  "redirects": [
+    { "source": "/tip/", "destination": "/tip", "permanent": false },
+    { "source": "/tips", "destination": "/tip", "permanent": false },
+    { "source": "/tip/:n(\\d)", "destination": "/t0:n.html", "permanent": false },
+    { "source": "/tip/:n(\\d{2})", "destination": "/t:n.html", "permanent": false }
+  ]
+}
