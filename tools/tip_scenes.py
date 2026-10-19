@@ -370,6 +370,29 @@ S["17_ditto_b"] = page(desktop(
     + key("Ctrl + `") + tag("여러 개 골라 Enter → 한꺼번에", "누른 뒤")))
 
 
+scan = ('<div style="position:absolute;inset:0;background:#525659"><div style="position:absolute;left:230px;top:24px;width:620px;height:860px;background:#fbfaf6;'
+        'padding:46px 54px;transform:rotate(-0.6deg);filter:contrast(.92) blur(.25px);font-family:Batang,serif;color:#222;box-shadow:0 2px 10px rgba(0,0,0,.4)">'
+        '<div style="text-align:center;font-size:24px;font-weight:900;letter-spacing:.3em">가 상 교 육 지 원 청</div>'
+        '<div style="font-size:14px;line-height:2;margin-top:18px">수신: 관내 초등학교장<br>제목: 2026 겨울방학 안전교육 자료 안내 (가상)</div>'
+        '<div style="font-size:14px;line-height:2;margin-top:10px">1. 겨울방학 중 학생 안전사고 예방을 위하여 붙임 자료를 안내합니다.<br>'
+        '2. 각 학교에서는 방학식 전 안전교육 시간에 활용하여 주시기 바랍니다.<br>　가. 대상: 초등학교 전 학년<br>　나. 내용: 빙판길·난방기구·감염병 예방</div>'
+        '<div style="position:absolute;right:60px;bottom:120px;width:90px;height:90px;border:3px solid #c0392b;border-radius:50%;color:#c0392b;'
+        'display:flex;align-items:center;justify-content:center;font-weight:900;transform:rotate(-12deg)">직인</div></div></div>')
+S["18_ocr_a"] = page(desktop(win(120, 30, 1040, 680, "스캔_안전교육공문 (가상).pdf - Edge", scan, "#dc2626")
+    + '<div style="position:absolute;left:420px;top:260px;width:430px;height:26px;background:rgba(37,99,235,.18);border:1px dashed #2563eb"></div>'
+    + '<div style="position:absolute;left:860px;top:250px;background:#fff;border:2px solid #f59e0b;border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px">드래그해도 글자가 안 잡혀요 (그림이라서)</div>'
+    + tag("스캔한 공문 글자를 다시 쳐야 할 때")))
+S["18_ocr_b"] = page(desktop(win(120, 30, 1040, 680, "스캔_안전교육공문 (가상).pdf - Edge", scan, "#dc2626"))
+    + '<div style="position:absolute;left:400px;top:240px;width:600px;height:150px;border:2px solid #fff;box-shadow:0 0 0 2000px rgba(0,0,0,.5)"></div>'
+    + '<div style="position:absolute;left:470px;top:680px;background:#fff;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.3)">✓ 텍스트를 클립보드에 복사했어요</div>'
+    + key("Win + Shift + T") + tag("글자 부분을 끌면 인식해서 복사", "누른 뒤"))
+S["18_ocr_c"] = page(desktop(hwp_win(160, 30, 960, 680, "안전교육 계획 기안.hwp - 한글",
+    '<h1 style="font-size:18px">겨울방학 안전교육 계획</h1><div style="outline:4px solid #ed1aa0;outline-offset:6px">'
+    '1. 겨울방학 중 학생 안전사고 예방을 위하여 붙임 자료를 안내합니다.<br>2. 각 학교에서는 방학식 전 안전교육 시간에 활용하여 주시기 바랍니다.<br>'
+    '　가. 대상: 초등학교 전 학년<br>　나. 내용: 빙판길·난방기구·감염병 예방</div><p style="margin-top:22px">3. 본교 운영: </p>', pw=600, ph=620)
+    + key("Ctrl + V") + tag("다시 칠 필요 없이 글자로 붙어요", "붙인 뒤")))
+
+
 # ------------------------------------------------------------------ 찍기
 def main():
     want = sys.argv[1:]
